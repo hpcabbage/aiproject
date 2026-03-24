@@ -1,6 +1,6 @@
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { Habit } from '../types';
+import { categoryLabels, Habit } from '../types';
 import { colors } from '../theme/colors';
 import { getTodayKey } from '../utils/date';
 
@@ -16,10 +16,15 @@ export const HabitCard = ({ habit, onToggle }: Props) => {
     <Pressable onPress={onToggle} style={styles.wrapper}>
       <View style={[styles.dot, { backgroundColor: habit.color }]} />
       <View style={styles.content}>
-        <Text style={styles.name}>{habit.name}</Text>
+        <View style={styles.rowTop}>
+          <Text style={styles.name}>{habit.name}</Text>
+          <View style={styles.badge}>
+            <Text style={styles.badgeText}>{categoryLabels[habit.category]}</Text>
+          </View>
+        </View>
         <Text style={styles.meta}>连续 {habit.streak} 天 · 点击{doneToday ? '取消' : ''}打卡</Text>
       </View>
-      <View style={[styles.badge, doneToday && styles.badgeDone]}>
+      <View style={[styles.badgeAction, doneToday && styles.badgeDone]}>
         <Ionicons name={doneToday ? 'checkmark' : 'flash'} size={16} color={colors.white} />
       </View>
     </Pressable>
@@ -45,18 +50,35 @@ const styles = StyleSheet.create({
   },
   content: {
     flex: 1,
-    gap: 4,
+    gap: 6,
+  },
+  rowTop: {
+    flexDirection: 'row',
+    gap: 10,
+    alignItems: 'center',
   },
   name: {
     color: colors.text,
     fontSize: 16,
     fontWeight: '600',
+    flex: 1,
   },
   meta: {
     color: colors.textMuted,
     fontSize: 12,
   },
   badge: {
+    paddingHorizontal: 10,
+    paddingVertical: 5,
+    borderRadius: 999,
+    backgroundColor: 'rgba(36, 200, 255, 0.16)',
+  },
+  badgeText: {
+    color: colors.accentSecondary,
+    fontSize: 11,
+    fontWeight: '700',
+  },
+  badgeAction: {
     width: 32,
     height: 32,
     borderRadius: 16,
