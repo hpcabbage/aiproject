@@ -4,7 +4,7 @@
 - **What to call them:** 老板
 - **Pronouns:** _(optional)_
 - **Timezone:** Asia/Shanghai
-- **Notes:** 偏好被称呼为“老板”。
+- **Notes:** 偏好被称呼为“老板”。默认希望助手自主推进，不需要事事确认；仅在涉及破坏性操作、外部发送、权限/安全边界变化或目标不清时再询问。
 
 ## Context
 
