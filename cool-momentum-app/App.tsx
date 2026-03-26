@@ -255,7 +255,28 @@ export default function App() {
                     if (habit && !doneToday && habit.reminder?.notificationId) {
                       await cancelReminder(habit.reminder.notificationId);
                     }
-                    toggleHabit(id);
+
+                    const toggled = toggleHabit(id);
+
+                    if (habit?.completions.includes(getTodayKey()) && toggled?.reminder?.enabled) {
+                      const granted = await requestNotificationPermission();
+                      if (granted) {
+                        const notificationId = await scheduleDailyReminder(
+                          'Momentum｜习惯该打卡了',
+                          `今天把「${toggled.name}」这条习惯点亮。`,
+                          toggled.reminder,
+                        );
+
+                        updateHabit(id, {
+                          name: toggled.name,
+                          category: toggled.category,
+                          reminder: {
+                            ...toggled.reminder,
+                            notificationId,
+                          },
+                        });
+                      }
+                    }
                   }}
                   onEditHabit={(id) => {
                     const item = state.habits.find((habit) => habit.id === id);

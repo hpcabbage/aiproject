@@ -206,8 +206,9 @@ export const useMomentumStore = () => {
     }));
   };
 
-  const toggleHabit = (id: string) => {
+  const toggleHabit = (id: string): AppState['habits'][number] | null => {
     const today = getTodayKey();
+    let toggledHabit: AppState['habits'][number] | null = null;
 
     setState((current) => ({
       ...current,
@@ -220,14 +221,32 @@ export const useMomentumStore = () => {
         const completions = doneToday
           ? habit.completions.filter((value) => value !== today)
           : [...habit.completions, today];
+        const previousReminder = habit.reminder ?? { enabled: false, time: '09:00' };
 
-        return {
+        toggledHabit = {
           ...habit,
           completions,
           streak: doneToday ? Math.max(0, habit.streak - 1) : habit.streak + 1,
+          reminder: doneToday
+            ? {
+                ...previousReminder,
+                enabled: previousReminder.resumeEnabledOnUndo ?? previousReminder.enabled,
+                notificationId: undefined,
+                resumeEnabledOnUndo: undefined,
+              }
+            : {
+                ...previousReminder,
+                enabled: false,
+                notificationId: undefined,
+                resumeEnabledOnUndo: previousReminder.enabled,
+              },
         };
+
+        return toggledHabit;
       }),
     }));
+
+    return toggledHabit;
   };
 
   return {
