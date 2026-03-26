@@ -68,68 +68,70 @@ export const HomeScreen = ({
         <ProgressRing value={completionRate} />
       </LinearGradient>
 
-      <View style={styles.quickStatsGrid}>
-        <GlassCard style={styles.quickStatCard}>
-          <View style={styles.quickStatInner}>
-            <Text style={styles.quickStatValue}>{pendingTodos}</Text>
-            <Text style={styles.quickStatLabel}>待拿下</Text>
-            <Text style={styles.quickStatHint}>优先清最关键的待办，别把注意力散掉。</Text>
-          </View>
-        </GlassCard>
-        <GlassCard style={styles.quickStatCard}>
-          <View style={styles.quickStatInner}>
-            <Text style={styles.quickStatValue}>{habitsDoneToday}/{Math.max(habits.length, 0)}</Text>
-            <Text style={styles.quickStatLabel}>今日打卡</Text>
-            <Text style={styles.quickStatHint}>把今天该完成的动作点亮，节奏会更稳。</Text>
-          </View>
-        </GlassCard>
-        <GlassCard style={styles.quickStatCardWide}>
-          <View style={styles.quickStatWideInner}>
-            <View>
-              <Text style={styles.quickStatWideTitle}>提醒中的项目</Text>
-              <Text style={styles.quickStatWideSubtitle}>只统计今天还会继续推着你走的条目。</Text>
+      <View style={styles.summaryBlock}>
+        <View style={styles.quickStatsGrid}>
+          <GlassCard style={styles.quickStatCard}>
+            <View style={styles.quickStatInner}>
+              <Text style={styles.quickStatValue}>{pendingTodos}</Text>
+              <Text style={styles.quickStatLabel}>待拿下</Text>
+              <Text style={styles.quickStatHint}>优先清最关键的待办，别把注意力散掉。</Text>
             </View>
-            <View style={styles.reminderBadgeLarge}>
-              <Ionicons name="notifications" size={16} color={colors.white} />
-              <Text style={styles.reminderBadgeLargeText}>{reminderCount}</Text>
+          </GlassCard>
+          <GlassCard style={styles.quickStatCard}>
+            <View style={styles.quickStatInner}>
+              <Text style={styles.quickStatValue}>{habitsDoneToday}/{Math.max(habits.length, 0)}</Text>
+              <Text style={styles.quickStatLabel}>今日打卡</Text>
+              <Text style={styles.quickStatHint}>把今天该完成的动作点亮，节奏会更稳。</Text>
+            </View>
+          </GlassCard>
+          <GlassCard style={styles.quickStatCardWide}>
+            <View style={styles.quickStatWideInner}>
+              <View>
+                <Text style={styles.quickStatWideTitle}>提醒中的项目</Text>
+                <Text style={styles.quickStatWideSubtitle}>只统计今天还会继续推着你走的条目。</Text>
+              </View>
+              <View style={styles.reminderBadgeLarge}>
+                <Ionicons name="notifications" size={16} color={colors.white} />
+                <Text style={styles.reminderBadgeLargeText}>{reminderCount}</Text>
+              </View>
+            </View>
+          </GlassCard>
+        </View>
+
+        <GlassCard>
+          <View style={styles.insightCardInner}>
+            <View style={styles.insightBadge}>
+              <Ionicons name="pulse" size={16} color={colors.white} />
+            </View>
+            <View style={styles.insightBody}>
+              <Text style={styles.insightTitle}>当前节奏</Text>
+              <Text style={styles.insightText}>{topCategory}</Text>
+            </View>
+            <View style={styles.doneBadge}>
+              <Text style={styles.doneBadgeText}>已完成 {doneTodos}</Text>
+            </View>
+          </View>
+        </GlassCard>
+
+        <GlassCard>
+          <View style={styles.secondaryInsightRow}>
+            <View style={styles.secondaryInsightItem}>
+              <Text style={styles.secondaryInsightLabel}>未打卡习惯</Text>
+              <Text style={styles.secondaryInsightValue}>{activeHabitCount}</Text>
+            </View>
+            <View style={styles.secondaryDivider} />
+            <View style={styles.secondaryInsightItem}>
+              <Text style={styles.secondaryInsightLabel}>已完成待办</Text>
+              <Text style={styles.secondaryInsightValue}>{doneTodos}</Text>
+            </View>
+            <View style={styles.secondaryDivider} />
+            <View style={styles.secondaryInsightItem}>
+              <Text style={styles.secondaryInsightLabel}>进行中待办</Text>
+              <Text style={styles.secondaryInsightValue}>{pendingTodos}</Text>
             </View>
           </View>
         </GlassCard>
       </View>
-
-      <GlassCard>
-        <View style={styles.insightCardInner}>
-          <View style={styles.insightBadge}>
-            <Ionicons name="pulse" size={16} color={colors.white} />
-          </View>
-          <View style={styles.insightBody}>
-            <Text style={styles.insightTitle}>当前节奏</Text>
-            <Text style={styles.insightText}>{topCategory}</Text>
-          </View>
-          <View style={styles.doneBadge}>
-            <Text style={styles.doneBadgeText}>已完成 {doneTodos}</Text>
-          </View>
-        </View>
-      </GlassCard>
-
-      <GlassCard>
-        <View style={styles.secondaryInsightRow}>
-          <View style={styles.secondaryInsightItem}>
-            <Text style={styles.secondaryInsightLabel}>未打卡习惯</Text>
-            <Text style={styles.secondaryInsightValue}>{activeHabitCount}</Text>
-          </View>
-          <View style={styles.secondaryDivider} />
-          <View style={styles.secondaryInsightItem}>
-            <Text style={styles.secondaryInsightLabel}>已完成待办</Text>
-            <Text style={styles.secondaryInsightValue}>{doneTodos}</Text>
-          </View>
-          <View style={styles.secondaryDivider} />
-          <View style={styles.secondaryInsightItem}>
-            <Text style={styles.secondaryInsightLabel}>进行中待办</Text>
-            <Text style={styles.secondaryInsightValue}>{pendingTodos}</Text>
-          </View>
-        </View>
-      </GlassCard>
 
       {topTodos.length ? (
         <GlassCard>
@@ -237,7 +239,7 @@ export const HomeScreen = ({
 
 const styles = StyleSheet.create({
   container: { flex: 1 },
-  content: { padding: 20, paddingBottom: 120, gap: 20 },
+  content: { padding: 20, paddingBottom: 120, gap: 18 },
   hero: {
     borderRadius: 30,
     padding: 22,
@@ -265,7 +267,8 @@ const styles = StyleSheet.create({
     lineHeight: 21,
     maxWidth: 280,
   },
-  quickStatsGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 12 },
+  summaryBlock: { gap: 12 },
+  quickStatsGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 10 },
   quickStatCard: { width: '48%' },
   quickStatCardWide: { width: '100%' },
   quickStatInner: { minHeight: 104, padding: 16, justifyContent: 'center', gap: 6 },
@@ -294,7 +297,7 @@ const styles = StyleSheet.create({
   reminderBadgeLargeText: { color: colors.white, fontSize: 13, fontWeight: '800' },
   insightCardInner: {
     paddingHorizontal: 18,
-    paddingVertical: 16,
+    paddingVertical: 14,
     flexDirection: 'row',
     gap: 14,
     alignItems: 'center',
@@ -329,7 +332,7 @@ const styles = StyleSheet.create({
   secondaryInsightLabel: { color: colors.textMuted, fontSize: 12, fontWeight: '700' },
   secondaryInsightValue: { color: colors.text, fontSize: 20, fontWeight: '800' },
   secondaryDivider: { width: 1, alignSelf: 'stretch', backgroundColor: colors.border },
-  topFocusInner: { paddingHorizontal: 18, paddingVertical: 16, gap: 14 },
+  topFocusInner: { paddingHorizontal: 18, paddingVertical: 16, gap: 12 },
   topFocusHeader: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 12 },
   topFocusTitle: { color: colors.text, fontSize: 18, fontWeight: '800' },
   topFocusSubtitle: { marginTop: 4, color: colors.textMuted, fontSize: 12, lineHeight: 18, maxWidth: 240 },
@@ -406,7 +409,7 @@ const styles = StyleSheet.create({
     fontSize: 12,
   },
   filterTextActive: { color: colors.white },
-  quickCard: { marginTop: -6 },
+  quickCard: { marginTop: -4 },
   quickCardInner: {
     paddingHorizontal: 18,
     paddingVertical: 18,
@@ -420,6 +423,7 @@ const styles = StyleSheet.create({
     color: colors.textMuted,
     fontSize: 13,
     maxWidth: 220,
+    lineHeight: 18,
   },
   addButton: {
     width: 48,
@@ -429,7 +433,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     backgroundColor: colors.accent,
   },
-  section: { gap: 12 },
+  section: { gap: 10 },
   list: { gap: 12 },
   emptyText: {
     color: colors.textMuted,

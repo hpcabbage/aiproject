@@ -71,60 +71,64 @@ export const StatsScreen = ({ habits, todos, completionRate, bestStreak, totalDo
     <View style={styles.wrapper}>
       <SectionTitle title="统计面板" subtitle="把推进节奏翻译成可见反馈，方便你继续稳住手感。" />
 
-      <View style={styles.grid}>
-        <GlassCard style={styles.metricCard}>
-          <View style={styles.metricInner}>
-            <Text style={styles.metricValue}>{Math.round(completionRate)}%</Text>
-            <Text style={styles.metricLabel}>今日完成率</Text>
-            <Text style={styles.metricHint}>先把今天该推进的推进完，面板的反馈会越来越清楚。</Text>
-          </View>
-        </GlassCard>
-        <GlassCard style={styles.metricCard}>
-          <View style={styles.metricInner}>
-            <Text style={styles.metricValue}>{bestStreak}</Text>
-            <Text style={styles.metricLabel}>最佳连续天数</Text>
-            <Text style={styles.metricHint}>连续性越稳，首页和统计页给你的节奏感就越强。</Text>
-          </View>
-        </GlassCard>
-        <GlassCard style={styles.metricCardWide}>
-          <View style={styles.metricInner}>
-            <Text style={styles.metricValue}>{totalDone}</Text>
-            <Text style={styles.metricLabel}>今日总完成项</Text>
-            <Text style={styles.metricHint}>把待办和习惯放在同一张表里，看的是你今天的整体推进力度。</Text>
+      <View style={styles.primaryMetricBlock}>
+        <View style={styles.grid}>
+          <GlassCard style={styles.metricCard}>
+            <View style={styles.metricInner}>
+              <Text style={styles.metricValue}>{Math.round(completionRate)}%</Text>
+              <Text style={styles.metricLabel}>今日完成率</Text>
+              <Text style={styles.metricHint}>先把今天该推进的推进完，面板的反馈会越来越清楚。</Text>
+            </View>
+          </GlassCard>
+          <GlassCard style={styles.metricCard}>
+            <View style={styles.metricInner}>
+              <Text style={styles.metricValue}>{bestStreak}</Text>
+              <Text style={styles.metricLabel}>最佳连续天数</Text>
+              <Text style={styles.metricHint}>连续性越稳，首页和统计页给你的节奏感就越强。</Text>
+            </View>
+          </GlassCard>
+          <GlassCard style={styles.metricCardWide}>
+            <View style={styles.metricInner}>
+              <Text style={styles.metricValue}>{totalDone}</Text>
+              <Text style={styles.metricLabel}>今日总完成项</Text>
+              <Text style={styles.metricHint}>把待办和习惯放在同一张表里，看的是你今天的整体推进力度。</Text>
+            </View>
+          </GlassCard>
+        </View>
+
+        <GlassCard>
+          <View style={styles.summaryInner}>
+            <Text style={styles.summaryEyebrow}>当前主线</Text>
+            <Text style={styles.summaryTitle}>{topCategory}</Text>
+            <View style={styles.summaryRow}>
+              {(Object.keys(categorySummary) as Category[]).map((key) => (
+                <View key={key} style={styles.summaryBadge}>
+                  <Text style={styles.summaryBadgeLabel}>{categoryLabels[key]}</Text>
+                  <Text style={styles.summaryBadgeValue}>{categorySummary[key]}</Text>
+                </View>
+              ))}
+            </View>
           </View>
         </GlassCard>
       </View>
 
-      <GlassCard>
-        <View style={styles.summaryInner}>
-          <Text style={styles.summaryEyebrow}>当前主线</Text>
-          <Text style={styles.summaryTitle}>{topCategory}</Text>
-          <View style={styles.summaryRow}>
-            {(Object.keys(categorySummary) as Category[]).map((key) => (
-              <View key={key} style={styles.summaryBadge}>
-                <Text style={styles.summaryBadgeLabel}>{categoryLabels[key]}</Text>
-                <Text style={styles.summaryBadgeValue}>{categorySummary[key]}</Text>
-              </View>
-            ))}
-          </View>
+      <View style={styles.secondaryMetricBlock}>
+        <View style={styles.grid}>
+          <GlassCard style={styles.metricCard}>
+            <View style={styles.metricInnerCompact}>
+              <Text style={styles.metricValueSmall}>{Math.round(highPriorityRate)}%</Text>
+              <Text style={styles.metricLabel}>高优先级拿下率</Text>
+              <Text style={styles.metricMeta}>{highPriorityDone}/{highPriorityTotal || 0} 条</Text>
+            </View>
+          </GlassCard>
+          <GlassCard style={styles.metricCard}>
+            <View style={styles.metricInnerCompact}>
+              <Text style={styles.metricValueSmall}>{topDoneCategory?.done ?? 0}</Text>
+              <Text style={styles.metricLabel}>当前最有产出分类</Text>
+              <Text style={styles.metricMeta}>{topDoneCategory ? categoryLabels[topDoneCategory.key] : '--'}</Text>
+            </View>
+          </GlassCard>
         </View>
-      </GlassCard>
-
-      <View style={styles.grid}>
-        <GlassCard style={styles.metricCard}>
-          <View style={styles.metricInnerCompact}>
-            <Text style={styles.metricValueSmall}>{Math.round(highPriorityRate)}%</Text>
-            <Text style={styles.metricLabel}>高优先级拿下率</Text>
-            <Text style={styles.metricMeta}>{highPriorityDone}/{highPriorityTotal || 0} 条</Text>
-          </View>
-        </GlassCard>
-        <GlassCard style={styles.metricCard}>
-          <View style={styles.metricInnerCompact}>
-            <Text style={styles.metricValueSmall}>{topDoneCategory?.done ?? 0}</Text>
-            <Text style={styles.metricLabel}>当前最有产出分类</Text>
-            <Text style={styles.metricMeta}>{topDoneCategory ? categoryLabels[topDoneCategory.key] : '--'}</Text>
-          </View>
-        </GlassCard>
       </View>
 
       <GlassCard>
@@ -254,18 +258,20 @@ export const StatsScreen = ({ habits, todos, completionRate, bestStreak, totalDo
 };
 
 const styles = StyleSheet.create({
-  wrapper: { gap: 16 },
+  wrapper: { gap: 14 },
+  primaryMetricBlock: { gap: 12 },
+  secondaryMetricBlock: { gap: 12 },
   grid: { flexDirection: 'row', flexWrap: 'wrap', gap: 12 },
   metricCard: { width: '48%' },
   metricCardWide: { width: '100%' },
-  metricInner: { minHeight: 128, padding: 18, justifyContent: 'center', gap: 10 },
+  metricInner: { minHeight: 120, padding: 18, justifyContent: 'center', gap: 8 },
   metricInnerCompact: { minHeight: 110, padding: 18, justifyContent: 'center', gap: 8 },
   metricValue: { color: colors.text, fontSize: 28, fontWeight: '800' },
   metricValueSmall: { color: colors.text, fontSize: 24, fontWeight: '800' },
   metricLabel: { color: colors.textMuted, fontSize: 13 },
   metricHint: { color: colors.textMuted, fontSize: 11, lineHeight: 16 },
   metricMeta: { color: colors.textMuted, fontSize: 12 },
-  summaryInner: { padding: 18, gap: 12 },
+  summaryInner: { padding: 18, gap: 10 },
   summaryEyebrow: { color: colors.textMuted, fontSize: 12, fontWeight: '700' },
   summaryTitle: { color: colors.text, fontSize: 20, fontWeight: '800' },
   summaryRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 10 },
@@ -279,7 +285,7 @@ const styles = StyleSheet.create({
   },
   summaryBadgeLabel: { color: colors.textMuted, fontSize: 11, fontWeight: '700' },
   summaryBadgeValue: { color: colors.text, fontSize: 16, fontWeight: '800' },
-  trendInner: { padding: 18, gap: 16 },
+  trendInner: { padding: 18, gap: 14 },
   trendHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', gap: 12 },
   trendSwitch: {
     flexDirection: 'row',
@@ -318,7 +324,7 @@ const styles = StyleSheet.create({
   trendBarToday: { backgroundColor: colors.accent },
   trendLabel: { color: colors.textMuted, fontSize: 10 },
   trendLabelToday: { color: colors.text, fontWeight: '700' },
-  trendStatsRow: { flexDirection: 'row', gap: 10 },
+  trendStatsRow: { flexDirection: 'row', gap: 8 },
   trendStatCard: {
     flex: 1,
     paddingHorizontal: 12,

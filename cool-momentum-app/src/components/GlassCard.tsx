@@ -17,11 +17,11 @@ export const GlassCard = ({ children, style }: Props) => {
 
 const styles = StyleSheet.create({
   wrapper: {
-    borderRadius: 24,
+    borderRadius: 22,
     padding: 1,
   },
   inner: {
-    borderRadius: 23,
+    borderRadius: 21,
     backgroundColor: colors.card,
     borderWidth: 1,
     borderColor: colors.border,

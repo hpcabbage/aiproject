@@ -57,9 +57,9 @@ const styles = StyleSheet.create({
   wrapper: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 12,
-    paddingVertical: 14,
-    paddingHorizontal: 16,
+    gap: 10,
+    paddingVertical: 13,
+    paddingHorizontal: 15,
     backgroundColor: colors.cardSoft,
     borderRadius: 18,
     borderWidth: 1,
