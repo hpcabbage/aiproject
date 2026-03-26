@@ -32,3 +32,16 @@
   4. 再次点击将 Todo 恢复为未完成，确认 reminder.enabled 恢复为开启，并重新生成新的 `notificationId`
   5. 删除另一条带提醒的 Todo，确认条目消失且旧 reminder 被取消
 - 判断：Todo 提醒闭环已经达到“可提交子里程碑”标准，适合作为一次独立提交；Habit 链路仍可在下一轮继续补齐。
+
+## 2026-03-26 / 轮次 5
+- 已补齐 Habit 提醒闭环的恢复语义：
+  - 打卡时取消当前 reminder
+  - 取消打卡时恢复 reminder.enabled 意图
+  - 若应恢复为开启，则重新 schedule 新提醒并写回新的 `notificationId`
+- 已补充手动验收路径（Habit 链路）：
+  1. 新建一个开启提醒的 Habit，设置时间如 `20:00`
+  2. 保存后进入编辑态，确认 reminder 为开启状态，且状态里存在 `notificationId`
+  3. 点击打卡，确认 reminder 被关闭，旧 `notificationId` 不再保留
+  4. 再次点击取消打卡，确认 reminder.enabled 恢复为开启，并重新生成新的 `notificationId`
+  5. 删除另一条带提醒的 Habit，确认条目消失且旧 reminder 被取消
+- 判断：M1（提醒闭环收口）已整体完成，Todo/Habit 两条提醒链路都具备新增/编辑、删除取消、进入完成态取消、恢复后重新调度的闭环能力。

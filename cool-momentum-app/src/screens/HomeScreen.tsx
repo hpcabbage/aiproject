@@ -54,6 +54,9 @@ export const HomeScreen = ({
     (item) => item.reminder?.enabled,
   ).length;
 
+  const emptyTodoText = selectedCategory === 'All' ? '今天的待办列表还是空的，先丢一条真正要推进的事进来。' : '这个分类下面还没有待办，补一条最关键的行动项吧。';
+  const emptyHabitText = selectedCategory === 'All' ? '今天还没有习惯卡片，挑一个最值得长期坚持的动作开始。' : '这个分类下面还没有习惯，正好补一条长期会复利的动作。';
+
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
       <LinearGradient colors={gradients.hero} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={styles.hero}>
@@ -70,19 +73,21 @@ export const HomeScreen = ({
           <View style={styles.quickStatInner}>
             <Text style={styles.quickStatValue}>{pendingTodos}</Text>
             <Text style={styles.quickStatLabel}>待拿下</Text>
+            <Text style={styles.quickStatHint}>优先清最关键的待办，别把注意力散掉。</Text>
           </View>
         </GlassCard>
         <GlassCard style={styles.quickStatCard}>
           <View style={styles.quickStatInner}>
             <Text style={styles.quickStatValue}>{habitsDoneToday}/{Math.max(habits.length, 0)}</Text>
             <Text style={styles.quickStatLabel}>今日打卡</Text>
+            <Text style={styles.quickStatHint}>把今天该完成的动作点亮，节奏会更稳。</Text>
           </View>
         </GlassCard>
         <GlassCard style={styles.quickStatCardWide}>
           <View style={styles.quickStatWideInner}>
             <View>
               <Text style={styles.quickStatWideTitle}>提醒中的项目</Text>
-              <Text style={styles.quickStatWideSubtitle}>只统计还没完成、今天还会推动你的条目。</Text>
+              <Text style={styles.quickStatWideSubtitle}>只统计今天还会继续推着你走的条目。</Text>
             </View>
             <View style={styles.reminderBadgeLarge}>
               <Ionicons name="notifications" size={16} color={colors.white} />
@@ -153,9 +158,14 @@ export const HomeScreen = ({
                       {item.reminder?.enabled ? (
                         <View style={styles.inlineReminderBadge}>
                           <Ionicons name="notifications-outline" size={12} color={colors.warning} />
-                          <Text style={styles.inlineReminderText}>{item.reminder.time}</Text>
+                          <Text style={styles.inlineReminderText}>提醒 {item.reminder.time}</Text>
                         </View>
-                      ) : null}
+                      ) : (
+                        <View style={styles.inlineReminderBadgeMuted}>
+                          <Ionicons name="notifications-off-outline" size={12} color={colors.textMuted} />
+                          <Text style={styles.inlineReminderTextMuted}>未开启提醒</Text>
+                        </View>
+                      )}
                     </View>
                   </View>
                   <Ionicons name="chevron-forward" size={18} color={colors.textMuted} />
@@ -182,7 +192,7 @@ export const HomeScreen = ({
         <View style={styles.quickCardInner}>
           <View>
             <Text style={styles.quickTitle}>开始推进</Text>
-            <Text style={styles.quickSubtitle}>新增一个待办，或者埋下一条长期习惯。</Text>
+            <Text style={styles.quickSubtitle}>新增一条要推进的事，或者补上一条会长期复利的习惯。</Text>
           </View>
           <TouchableOpacity style={styles.addButton} onPress={onAddPress}>
             <Ionicons name="add" size={22} color={colors.white} />
@@ -191,7 +201,7 @@ export const HomeScreen = ({
       </GlassCard>
 
       <View style={styles.section}>
-        <SectionTitle title="今日待办" subtitle="只保留真正要做的事" />
+        <SectionTitle title="今日待办" subtitle="只摆真正要推进的事，完成一条就少一条噪音。" />
         <View style={styles.list}>
           {todos.length ? (
             todos.map((item) => (
@@ -204,20 +214,20 @@ export const HomeScreen = ({
               />
             ))
           ) : (
-            <Text style={styles.emptyText}>这个分类下面现在没有待办，干净得像刚刚清过桌面。</Text>
+            <Text style={styles.emptyText}>{emptyTodoText}</Text>
           )}
         </View>
       </View>
 
       <View style={styles.section}>
-        <SectionTitle title="习惯打卡" subtitle="小动作，靠连续性变强" />
+        <SectionTitle title="习惯打卡" subtitle="每天点亮一点，靠连续性把状态慢慢抬上去。" />
         <View style={styles.list}>
           {habits.length ? (
             habits.map((habit) => (
               <HabitCard key={habit.id} habit={habit} onToggle={() => onToggleHabit(habit.id)} onEdit={() => onEditHabit(habit.id)} />
             ))
           ) : (
-            <Text style={styles.emptyText}>这个分类下面还没有习惯，正好补一条新的长期动作。</Text>
+            <Text style={styles.emptyText}>{emptyHabitText}</Text>
           )}
         </View>
       </View>
@@ -258,7 +268,7 @@ const styles = StyleSheet.create({
   quickStatsGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 12 },
   quickStatCard: { width: '48%' },
   quickStatCardWide: { width: '100%' },
-  quickStatInner: { minHeight: 96, padding: 16, justifyContent: 'center', gap: 6 },
+  quickStatInner: { minHeight: 104, padding: 16, justifyContent: 'center', gap: 6 },
   quickStatWideInner: {
     minHeight: 88,
     padding: 16,
@@ -269,6 +279,7 @@ const styles = StyleSheet.create({
   },
   quickStatValue: { color: colors.text, fontSize: 28, fontWeight: '800' },
   quickStatLabel: { color: colors.textMuted, fontSize: 12, fontWeight: '700' },
+  quickStatHint: { color: colors.textMuted, fontSize: 11, lineHeight: 16 },
   quickStatWideTitle: { color: colors.text, fontSize: 16, fontWeight: '800' },
   quickStatWideSubtitle: { marginTop: 6, color: colors.textMuted, fontSize: 12, lineHeight: 18, maxWidth: 220 },
   reminderBadgeLarge: {
@@ -363,6 +374,16 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(255,184,92,0.14)',
   },
   inlineReminderText: { color: colors.warning, fontSize: 11, fontWeight: '700' },
+  inlineReminderBadgeMuted: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 999,
+    backgroundColor: 'rgba(255,255,255,0.05)',
+  },
+  inlineReminderTextMuted: { color: colors.textMuted, fontSize: 11, fontWeight: '700' },
   filtersRow: {
     flexDirection: 'row',
     flexWrap: 'wrap',
@@ -414,6 +435,7 @@ const styles = StyleSheet.create({
     color: colors.textMuted,
     fontSize: 14,
     lineHeight: 22,
-    paddingVertical: 12,
+    paddingVertical: 16,
+    paddingHorizontal: 4,
   },
 });

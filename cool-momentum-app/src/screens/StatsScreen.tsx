@@ -65,27 +65,32 @@ export const StatsScreen = ({ habits, todos, completionRate, bestStreak, totalDo
   );
 
   const topDoneCategory = categoryDoneSummary.reduce((best, current) => (current.done > best.done ? current : best), categoryDoneSummary[0]);
+  const emptyTrend = trendTotal === 0;
+
   return (
     <View style={styles.wrapper}>
-      <SectionTitle title="统计面板" subtitle="让坚持这件事更有反馈感" />
+      <SectionTitle title="统计面板" subtitle="把推进节奏翻译成可见反馈，方便你继续稳住手感。" />
 
       <View style={styles.grid}>
         <GlassCard style={styles.metricCard}>
           <View style={styles.metricInner}>
             <Text style={styles.metricValue}>{Math.round(completionRate)}%</Text>
             <Text style={styles.metricLabel}>今日完成率</Text>
+            <Text style={styles.metricHint}>先把今天该推进的推进完，面板的反馈会越来越清楚。</Text>
           </View>
         </GlassCard>
         <GlassCard style={styles.metricCard}>
           <View style={styles.metricInner}>
             <Text style={styles.metricValue}>{bestStreak}</Text>
             <Text style={styles.metricLabel}>最佳连续天数</Text>
+            <Text style={styles.metricHint}>连续性越稳，首页和统计页给你的节奏感就越强。</Text>
           </View>
         </GlassCard>
         <GlassCard style={styles.metricCardWide}>
           <View style={styles.metricInner}>
             <Text style={styles.metricValue}>{totalDone}</Text>
             <Text style={styles.metricLabel}>今日总完成项</Text>
+            <Text style={styles.metricHint}>把待办和习惯放在同一张表里，看的是你今天的整体推进力度。</Text>
           </View>
         </GlassCard>
       </View>
@@ -105,7 +110,7 @@ export const StatsScreen = ({ habits, todos, completionRate, bestStreak, totalDo
         </View>
       </GlassCard>
 
-      <View style={styles.grid}> 
+      <View style={styles.grid}>
         <GlassCard style={styles.metricCard}>
           <View style={styles.metricInnerCompact}>
             <Text style={styles.metricValueSmall}>{Math.round(highPriorityRate)}%</Text>
@@ -139,44 +144,50 @@ export const StatsScreen = ({ habits, todos, completionRate, bestStreak, totalDo
             </View>
           </View>
 
-          <View style={styles.trendChart}>
-            {trendData.map((item) => (
-              <View key={item.key} style={styles.trendBarWrap}>
-                <Text style={styles.trendValue}>{item.total || ''}</Text>
-                <View style={styles.trendTrack}>
-                  <View
-                    style={[
-                      styles.trendBar,
-                      { height: `${Math.max((item.total / trendMax) * 100, item.total ? 10 : 4)}%` },
-                      item.isToday && styles.trendBarToday,
-                    ]}
-                  />
-                </View>
-                <Text style={[styles.trendLabel, item.isToday && styles.trendLabelToday]} numberOfLines={1}>
-                  {item.label}
-                </Text>
+          {emptyTrend ? (
+            <Text style={styles.emptyText}>最近这段时间还没有形成可见趋势，先完成几条待办或点亮几次习惯，统计页就会开始说话。</Text>
+          ) : (
+            <>
+              <View style={styles.trendChart}>
+                {trendData.map((item) => (
+                  <View key={item.key} style={styles.trendBarWrap}>
+                    <Text style={styles.trendValue}>{item.total || ''}</Text>
+                    <View style={styles.trendTrack}>
+                      <View
+                        style={[
+                          styles.trendBar,
+                          { height: `${Math.max((item.total / trendMax) * 100, item.total ? 10 : 4)}%` },
+                          item.isToday && styles.trendBarToday,
+                        ]}
+                      />
+                    </View>
+                    <Text style={[styles.trendLabel, item.isToday && styles.trendLabelToday]} numberOfLines={1}>
+                      {item.label}
+                    </Text>
+                  </View>
+                ))}
               </View>
-            ))}
-          </View>
 
-          <View style={styles.trendStatsRow}>
-            <View style={styles.trendStatCard}>
-              <Text style={styles.trendStatValue}>{trendTotal}</Text>
-              <Text style={styles.trendStatLabel}>累计完成</Text>
-            </View>
-            <View style={styles.trendStatCard}>
-              <Text style={styles.trendStatValue}>{activeDays}</Text>
-              <Text style={styles.trendStatLabel}>活跃天数</Text>
-            </View>
-            <View style={styles.trendStatCard}>
-              <Text style={styles.trendStatValue}>{averagePerDay.toFixed(1)}</Text>
-              <Text style={styles.trendStatLabel}>日均推进</Text>
-            </View>
-          </View>
+              <View style={styles.trendStatsRow}>
+                <View style={styles.trendStatCard}>
+                  <Text style={styles.trendStatValue}>{trendTotal}</Text>
+                  <Text style={styles.trendStatLabel}>累计完成</Text>
+                </View>
+                <View style={styles.trendStatCard}>
+                  <Text style={styles.trendStatValue}>{activeDays}</Text>
+                  <Text style={styles.trendStatLabel}>活跃天数</Text>
+                </View>
+                <View style={styles.trendStatCard}>
+                  <Text style={styles.trendStatValue}>{averagePerDay.toFixed(1)}</Text>
+                  <Text style={styles.trendStatLabel}>日均推进</Text>
+                </View>
+              </View>
 
-          <Text style={styles.trendFootnote}>
-            最猛的一天：{bestDay?.label ?? '--'} · {bestDay?.total ?? 0} 项
-          </Text>
+              <Text style={styles.trendFootnote}>
+                最猛的一天：{bestDay?.label ?? '--'} · {bestDay?.total ?? 0} 项
+              </Text>
+            </>
+          )}
         </View>
       </GlassCard>
 
@@ -208,27 +219,35 @@ export const StatsScreen = ({ habits, todos, completionRate, bestStreak, totalDo
       </GlassCard>
 
       <View style={styles.habitList}>
-        {habits.map((habit) => {
-          const week = getWeekCompletion(habit.completions);
-          return (
-            <GlassCard key={habit.id} style={styles.habitCard}>
-              <View style={styles.habitInner}>
-                <View style={styles.rowBetween}>
-                  <View>
-                    <Text style={styles.habitName}>{habit.name}</Text>
-                    <Text style={styles.habitMeta}>{categoryLabels[habit.category]} · 连续 {habit.streak} 天</Text>
+        {habits.length ? (
+          habits.map((habit) => {
+            const week = getWeekCompletion(habit.completions);
+            return (
+              <GlassCard key={habit.id} style={styles.habitCard}>
+                <View style={styles.habitInner}>
+                  <View style={styles.rowBetween}>
+                    <View>
+                      <Text style={styles.habitName}>{habit.name}</Text>
+                      <Text style={styles.habitMeta}>{categoryLabels[habit.category]} · 连续 {habit.streak} 天</Text>
+                    </View>
+                    <View style={[styles.habitDot, { backgroundColor: habit.color }]} />
                   </View>
-                  <View style={[styles.habitDot, { backgroundColor: habit.color }]} />
+                  <View style={styles.weekRow}>
+                    {week.map((done, index) => (
+                      <View key={`${habit.id}-${index}`} style={[styles.weekCell, done && styles.weekCellDone]} />
+                    ))}
+                  </View>
                 </View>
-                <View style={styles.weekRow}>
-                  {week.map((done, index) => (
-                    <View key={`${habit.id}-${index}`} style={[styles.weekCell, done && styles.weekCellDone]} />
-                  ))}
-                </View>
-              </View>
-            </GlassCard>
-          );
-        })}
+              </GlassCard>
+            );
+          })
+        ) : (
+          <GlassCard>
+            <View style={styles.emptyCardInner}>
+              <Text style={styles.emptyText}>还没有习惯趋势数据，先建立一条 habit，统计页才会开始沉淀你的连续性。</Text>
+            </View>
+          </GlassCard>
+        )}
       </View>
     </View>
   );
@@ -239,11 +258,12 @@ const styles = StyleSheet.create({
   grid: { flexDirection: 'row', flexWrap: 'wrap', gap: 12 },
   metricCard: { width: '48%' },
   metricCardWide: { width: '100%' },
-  metricInner: { minHeight: 120, padding: 18, justifyContent: 'center', gap: 10 },
+  metricInner: { minHeight: 128, padding: 18, justifyContent: 'center', gap: 10 },
   metricInnerCompact: { minHeight: 110, padding: 18, justifyContent: 'center', gap: 8 },
   metricValue: { color: colors.text, fontSize: 28, fontWeight: '800' },
   metricValueSmall: { color: colors.text, fontSize: 24, fontWeight: '800' },
   metricLabel: { color: colors.textMuted, fontSize: 13 },
+  metricHint: { color: colors.textMuted, fontSize: 11, lineHeight: 16 },
   metricMeta: { color: colors.textMuted, fontSize: 12 },
   summaryInner: { padding: 18, gap: 12 },
   summaryEyebrow: { color: colors.textMuted, fontSize: 12, fontWeight: '700' },
@@ -350,4 +370,6 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(255,255,255,0.08)',
   },
   weekCellDone: { backgroundColor: colors.success },
+  emptyCardInner: { padding: 18 },
+  emptyText: { color: colors.textMuted, fontSize: 14, lineHeight: 22 },
 });
