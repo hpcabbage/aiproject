@@ -282,7 +282,7 @@ const styles = StyleSheet.create({
   },
   quickStatValue: { color: colors.text, fontSize: 28, fontWeight: '800' },
   quickStatLabel: { color: colors.textMuted, fontSize: 12, fontWeight: '700' },
-  quickStatHint: { color: colors.textMuted, fontSize: 11, lineHeight: 16 },
+  quickStatHint: { color: colors.textMuted, fontSize: 10, lineHeight: 15 },
   quickStatWideTitle: { color: colors.text, fontSize: 16, fontWeight: '800' },
   quickStatWideSubtitle: { marginTop: 6, color: colors.textMuted, fontSize: 12, lineHeight: 18, maxWidth: 220 },
   reminderBadgeLarge: {

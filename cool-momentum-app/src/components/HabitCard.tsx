@@ -30,14 +30,18 @@ export const HabitCard = ({ habit, onToggle, onEdit }: Props) => {
             <Text style={[styles.streakBadgeText, doneToday && styles.streakBadgeTextDone]}>连续 {habit.streak} 天</Text>
           </View>
           <View style={[styles.reminderBadge, habit.reminder?.enabled && styles.reminderBadgeActive]}>
-            <Ionicons name={habit.reminder?.enabled ? 'notifications' : 'notifications-off-outline'} size={12} color={habit.reminder?.enabled ? colors.warning : colors.textMuted} />
+            <Ionicons
+              name={habit.reminder?.enabled ? 'notifications' : 'notifications-off-outline'}
+              size={12}
+              color={habit.reminder?.enabled ? colors.warning : colors.textMuted}
+            />
             <Text style={[styles.reminderBadgeText, habit.reminder?.enabled && styles.reminderBadgeTextActive]}>{reminderText}</Text>
           </View>
         </View>
         <Text style={styles.meta}>{statusText}</Text>
       </View>
       <View style={styles.actions}>
-        <Pressable onPress={onEdit} hitSlop={10}>
+        <Pressable onPress={onEdit} hitSlop={12} style={styles.actionButton}>
           <Ionicons name="create-outline" size={20} color={colors.textMuted} />
         </Pressable>
         <View style={[styles.badgeAction, doneToday && styles.badgeDone]}>
@@ -136,7 +140,13 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     paddingVertical: 2,
-    gap: 10,
+    gap: 8,
+  },
+  actionButton: {
+    width: 32,
+    height: 32,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   badgeAction: {
     width: 32,

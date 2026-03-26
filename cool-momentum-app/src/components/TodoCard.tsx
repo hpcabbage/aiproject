@@ -16,7 +16,7 @@ export const TodoCard = ({ item, onToggle, onDelete, onEdit }: Props) => {
 
   return (
     <View style={styles.wrapper}>
-      <Pressable style={styles.check} onPress={onToggle}>
+      <Pressable style={styles.check} onPress={onToggle} hitSlop={12}>
         <Ionicons
           name={item.done ? 'checkmark-circle' : 'ellipse-outline'}
           size={24}
@@ -35,17 +35,21 @@ export const TodoCard = ({ item, onToggle, onDelete, onEdit }: Props) => {
             <Text style={[styles.priorityBadgeText, styles[`priority${item.priority}Text`]]}>{priorityLabels[item.priority]}</Text>
           </View>
           <View style={[styles.reminderBadge, item.reminder?.enabled && styles.reminderBadgeActive]}>
-            <Ionicons name={item.reminder?.enabled ? 'notifications' : 'notifications-off-outline'} size={12} color={item.reminder?.enabled ? colors.warning : colors.textMuted} />
+            <Ionicons
+              name={item.reminder?.enabled ? 'notifications' : 'notifications-off-outline'}
+              size={12}
+              color={item.reminder?.enabled ? colors.warning : colors.textMuted}
+            />
             <Text style={[styles.reminderBadgeText, item.reminder?.enabled && styles.reminderBadgeTextActive]}>{reminderText}</Text>
           </View>
         </View>
         <Text style={styles.meta}>{statusText}</Text>
       </View>
       <View style={styles.actions}>
-        <Pressable onPress={onEdit} hitSlop={10}>
+        <Pressable onPress={onEdit} hitSlop={12} style={styles.actionButton}>
           <Ionicons name="create-outline" size={20} color={colors.textMuted} />
         </Pressable>
-        <Pressable onPress={onDelete} hitSlop={10}>
+        <Pressable onPress={onDelete} hitSlop={12} style={styles.actionButton}>
           <Ionicons name="close" size={22} color={colors.textMuted} />
         </Pressable>
       </View>
@@ -71,8 +75,14 @@ const styles = StyleSheet.create({
   },
   actions: {
     alignSelf: 'flex-start',
-    gap: 10,
+    gap: 8,
     paddingTop: 2,
+  },
+  actionButton: {
+    width: 32,
+    height: 32,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   content: {
     flex: 1,

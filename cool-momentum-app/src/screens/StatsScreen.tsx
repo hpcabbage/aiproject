@@ -269,7 +269,7 @@ const styles = StyleSheet.create({
   metricValue: { color: colors.text, fontSize: 28, fontWeight: '800' },
   metricValueSmall: { color: colors.text, fontSize: 24, fontWeight: '800' },
   metricLabel: { color: colors.textMuted, fontSize: 13 },
-  metricHint: { color: colors.textMuted, fontSize: 11, lineHeight: 16 },
+  metricHint: { color: colors.textMuted, fontSize: 10, lineHeight: 15 },
   metricMeta: { color: colors.textMuted, fontSize: 12 },
   summaryInner: { padding: 18, gap: 10 },
   summaryEyebrow: { color: colors.textMuted, fontSize: 12, fontWeight: '700' },
