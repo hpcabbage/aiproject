@@ -67,6 +67,7 @@ const normalizeState = (value: AppState): AppState => ({
       enabled: habit.reminder?.enabled ?? false,
       time: habit.reminder?.time ?? '09:00',
       notificationId: habit.reminder?.notificationId,
+      resumeEnabledOnUndo: habit.reminder?.resumeEnabledOnUndo,
     },
   })),
 });

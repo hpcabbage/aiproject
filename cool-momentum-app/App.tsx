@@ -58,6 +58,7 @@ export default function App() {
   const [editingHabitId, setEditingHabitId] = useState<string | null>(null);
   const [reminderEnabled, setReminderEnabled] = useState(false);
   const [reminderTime, setReminderTime] = useState('09:00');
+  const [confirmingDelete, setConfirmingDelete] = useState(false);
 
   const placeholder = useMemo(
     () => (draftMode === 'todo' ? '比如：把产品首页原型做完' : '比如：晨间复盘 10 分钟'),
@@ -92,6 +93,7 @@ export default function App() {
     setEditingHabitId(null);
     setReminderEnabled(false);
     setReminderTime('09:00');
+    setConfirmingDelete(false);
   };
 
   const openCreateModal = () => {
@@ -419,6 +421,16 @@ export default function App() {
                 <Text style={styles.submitText}>{editingTodo || editingHabit ? '保存修改' : '加入面板'}</Text>
               </TouchableOpacity>
 
+              <TouchableOpacity
+                style={styles.ghostButton}
+                onPress={() => {
+                  resetComposer();
+                  setModalVisible(false);
+                }}
+              >
+                <Text style={styles.ghostButtonText}>先不改了，返回面板</Text>
+              </TouchableOpacity>
+
               {editingTodoId || editingHabitId ? (
                 <TouchableOpacity
                   style={styles.secondaryButton}
@@ -435,7 +447,7 @@ export default function App() {
                     setModalVisible(false);
                   }}
                 >
-                  <Text style={styles.secondaryButtonText}>删除这条</Text>
+                  <Text style={styles.secondaryButtonText}>确认不要了，再删除这条</Text>
                 </TouchableOpacity>
               ) : null}
             </View>
@@ -483,10 +495,10 @@ const styles = StyleSheet.create({
     position: 'absolute',
     left: 20,
     right: 20,
-    bottom: 16,
+    bottom: 10,
     backgroundColor: 'rgba(9, 14, 28, 0.96)',
-    borderRadius: 20,
-    padding: 7,
+    borderRadius: 16,
+    padding: 5,
     flexDirection: 'row',
     gap: 8,
     borderWidth: 1,
@@ -495,8 +507,8 @@ const styles = StyleSheet.create({
   tab: {
     flex: 1,
     borderRadius: 15,
-    minHeight: 48,
-    paddingVertical: 12,
+    minHeight: 44,
+    paddingVertical: 10,
     alignItems: 'center',
     justifyContent: 'center',
     flexDirection: 'row',
@@ -566,6 +578,17 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
   inputDisabled: { opacity: 0.45 },
+  formHintCard: {
+    gap: 4,
+    paddingHorizontal: 14,
+    paddingVertical: 12,
+    borderRadius: 16,
+    backgroundColor: 'rgba(255,255,255,0.04)',
+    borderWidth: 1,
+    borderColor: colors.border,
+  },
+  formHintTitle: { color: colors.text, fontSize: 13, fontWeight: '800' },
+  formHintText: { color: colors.textMuted, fontSize: 12, lineHeight: 18 },
   reminderCard: {
     gap: 12,
     padding: 16,
@@ -597,6 +620,47 @@ const styles = StyleSheet.create({
     backgroundColor: colors.accentSecondary,
   },
   submitText: { color: '#05101A', fontSize: 16, fontWeight: '800' },
+  ghostButton: {
+    minHeight: 48,
+    borderRadius: 16,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: 'rgba(255,255,255,0.04)',
+    borderWidth: 1,
+    borderColor: colors.border,
+  },
+  ghostButtonText: { color: colors.textMuted, fontSize: 14, fontWeight: '700' },
+  secondaryButtonMuted: {
+    minHeight: 48,
+    borderRadius: 16,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: 'rgba(255, 107, 138, 0.08)',
+    borderWidth: 1,
+    borderColor: 'rgba(255, 107, 138, 0.18)',
+  },
+  secondaryButtonMutedText: { color: colors.danger, fontSize: 14, fontWeight: '700' },
+  confirmDeleteCard: {
+    gap: 10,
+    padding: 14,
+    borderRadius: 18,
+    backgroundColor: 'rgba(255, 107, 138, 0.08)',
+    borderWidth: 1,
+    borderColor: 'rgba(255, 107, 138, 0.2)',
+  },
+  confirmDeleteTitle: { color: colors.text, fontSize: 15, fontWeight: '800' },
+  confirmDeleteText: { color: colors.textMuted, fontSize: 12, lineHeight: 18 },
+  confirmDeleteActions: { gap: 10 },
+  confirmGhostButton: {
+    minHeight: 46,
+    borderRadius: 16,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: 'rgba(255,255,255,0.04)',
+    borderWidth: 1,
+    borderColor: colors.border,
+  },
+  confirmGhostButtonText: { color: colors.textMuted, fontSize: 14, fontWeight: '700' },
   secondaryButton: {
     minHeight: 50,
     borderRadius: 18,

@@ -54,8 +54,14 @@ export const HomeScreen = ({
     (item) => item.reminder?.enabled,
   ).length;
 
-  const emptyTodoText = selectedCategory === 'All' ? '今天的待办列表还是空的，先丢一条真正要推进的事进来。' : '这个分类下面还没有待办，补一条最关键的行动项吧。';
-  const emptyHabitText = selectedCategory === 'All' ? '今天还没有习惯卡片，挑一个最值得长期坚持的动作开始。' : '这个分类下面还没有习惯，正好补一条长期会复利的动作。';
+  const emptyTodoText =
+    selectedCategory === 'All'
+      ? '今天的待办列表还是空的，先丢一条真正要推进的事进来。'
+      : `当前筛选在「${categoryLabels[selectedCategory]}」，这个分类下面还没有待办，补一条最关键的行动项吧。`;
+  const emptyHabitText =
+    selectedCategory === 'All'
+      ? '今天还没有习惯卡片，挑一个最值得长期坚持的动作开始。'
+      : `当前筛选在「${categoryLabels[selectedCategory]}」，这个分类下面还没有习惯，正好补一条长期会复利的动作。`;
 
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
@@ -64,6 +70,7 @@ export const HomeScreen = ({
           <Text style={styles.kicker}>MOMENTUM V2</Text>
           <Text style={styles.heroTitle}>今天别散，狠狠干完。</Text>
           <Text style={styles.heroSubtitle}>{focusMessage}</Text>
+          <Text style={styles.heroGuide}>先看今日 Top 3，再从下面列表里推进；切分类时，空状态会告诉你缺什么。</Text>
         </View>
         <ProgressRing value={completionRate} />
       </LinearGradient>
@@ -239,7 +246,7 @@ export const HomeScreen = ({
 
 const styles = StyleSheet.create({
   container: { flex: 1 },
-  content: { padding: 20, paddingBottom: 132, gap: 18 },
+  content: { padding: 20, paddingBottom: 132, gap: 16 },
   hero: {
     borderRadius: 30,
     padding: 22,
@@ -265,6 +272,12 @@ const styles = StyleSheet.create({
     color: 'rgba(255,255,255,0.84)',
     fontSize: 14,
     lineHeight: 21,
+    maxWidth: 280,
+  },
+  heroGuide: {
+    color: 'rgba(255,255,255,0.72)',
+    fontSize: 12,
+    lineHeight: 18,
     maxWidth: 280,
   },
   summaryBlock: { gap: 12 },

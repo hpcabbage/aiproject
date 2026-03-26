@@ -207,6 +207,16 @@ Think of it like a human reviewing their journal and updating their mental model
 
 The goal: Be helpful without being annoying. Check in a few times a day, do useful background work, but respect quiet time.
 
+## Rate Limit / Cooldown 防踩坑
+
+规避规则：
+- 避免碎片化 patch：少做一行一改，优先整块读取后整块修改
+- 避免高频 burst：不要在短时间内叠很多 read/edit/exec/process/web 操作
+- 一个问题收口后再开下一个，不要 UI / 逻辑 / 截图 / 构建并行乱飞
+- heartbeat 轮次里只推进一个明确子步，避免一次 heartbeat 里做过多工具调用
+- 遇到 `edit failed` 先读回文件再继续，不要直接叠下一层 patch
+- 若再次出现 rate-limit 提示，先做“现场体检”：当前文件是否干净、TS 是否通过、是否存在半截改动，再继续
+
 ## Make It Yours
 
 This is a starting point. Add your own conventions, style, and rules as you figure out what works.

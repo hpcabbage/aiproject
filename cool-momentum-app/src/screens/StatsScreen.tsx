@@ -69,7 +69,14 @@ export const StatsScreen = ({ habits, todos, completionRate, bestStreak, totalDo
 
   return (
     <View style={styles.wrapper}>
-      <SectionTitle title="统计面板" subtitle="把推进节奏翻译成可见反馈，方便你继续稳住手感。" />
+      <SectionTitle title="统计面板" subtitle="这页不是报表，是告诉你这几天到底有没有持续往前走。" />
+
+      <GlassCard>
+        <View style={styles.guideCardInner}>
+          <Text style={styles.guideCardTitle}>先看什么</Text>
+          <Text style={styles.guideCardText}>先看今日完成率和总完成项，再看趋势；如果某个分类长期没动，它会在下面直接露出来。</Text>
+        </View>
+      </GlassCard>
 
       <View style={styles.primaryMetricBlock}>
         <View style={styles.grid}>
@@ -258,7 +265,10 @@ export const StatsScreen = ({ habits, todos, completionRate, bestStreak, totalDo
 };
 
 const styles = StyleSheet.create({
-  wrapper: { gap: 14 },
+  wrapper: { gap: 12 },
+  guideCardInner: { padding: 16, gap: 6 },
+  guideCardTitle: { color: colors.text, fontSize: 14, fontWeight: '800' },
+  guideCardText: { color: colors.textMuted, fontSize: 12, lineHeight: 18 },
   primaryMetricBlock: { gap: 12 },
   secondaryMetricBlock: { gap: 12 },
   grid: { flexDirection: 'row', flexWrap: 'wrap', gap: 12 },
