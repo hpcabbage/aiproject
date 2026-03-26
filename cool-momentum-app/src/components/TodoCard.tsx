@@ -1,15 +1,16 @@
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { categoryLabels, TodoItem } from '../types';
+import { categoryLabels, priorityLabels, TodoItem } from '../types';
 import { colors } from '../theme/colors';
 
 type Props = {
   item: TodoItem;
   onToggle: () => void;
   onDelete: () => void;
+  onEdit: () => void;
 };
 
-export const TodoCard = ({ item, onToggle, onDelete }: Props) => {
+export const TodoCard = ({ item, onToggle, onDelete, onEdit }: Props) => {
   return (
     <View style={styles.wrapper}>
       <Pressable style={styles.check} onPress={onToggle}>
@@ -22,15 +23,28 @@ export const TodoCard = ({ item, onToggle, onDelete }: Props) => {
       <View style={styles.content}>
         <View style={styles.rowTop}>
           <Text style={[styles.title, item.done && styles.done]}>{item.title}</Text>
+        </View>
+        <View style={styles.metaRow}>
           <View style={styles.badge}>
             <Text style={styles.badgeText}>{categoryLabels[item.category]}</Text>
           </View>
+          <View style={[styles.priorityBadge, styles[`priority${item.priority}`]]}>
+            <Text style={[styles.priorityBadgeText, styles[`priority${item.priority}Text`]]}>{priorityLabels[item.priority]}</Text>
+          </View>
         </View>
-        <Text style={styles.meta}>{item.done ? '已完成，干得漂亮' : '今天把它拿下'}</Text>
+        <Text style={styles.meta}>
+          {item.done ? '已完成，干得漂亮' : '今天把它拿下'}
+          {item.reminder?.enabled ? ` · 提醒 ${item.reminder.time}` : ''}
+        </Text>
       </View>
-      <Pressable onPress={onDelete} hitSlop={10}>
-        <Ionicons name="close" size={22} color={colors.textMuted} />
-      </Pressable>
+      <View style={styles.actions}>
+        <Pressable onPress={onEdit} hitSlop={10}>
+          <Ionicons name="create-outline" size={20} color={colors.textMuted} />
+        </Pressable>
+        <Pressable onPress={onDelete} hitSlop={10}>
+          <Ionicons name="close" size={22} color={colors.textMuted} />
+        </Pressable>
+      </View>
     </View>
   );
 };
@@ -51,6 +65,11 @@ const styles = StyleSheet.create({
     alignSelf: 'flex-start',
     paddingTop: 2,
   },
+  actions: {
+    alignSelf: 'flex-start',
+    gap: 10,
+    paddingTop: 2,
+  },
   content: {
     flex: 1,
     gap: 6,
@@ -58,6 +77,12 @@ const styles = StyleSheet.create({
   rowTop: {
     flexDirection: 'row',
     gap: 10,
+    alignItems: 'center',
+  },
+  metaRow: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 8,
     alignItems: 'center',
   },
   title: {
@@ -85,4 +110,19 @@ const styles = StyleSheet.create({
     fontSize: 11,
     fontWeight: '700',
   },
+  priorityBadge: {
+    paddingHorizontal: 10,
+    paddingVertical: 5,
+    borderRadius: 999,
+  },
+  priorityBadgeText: {
+    fontSize: 11,
+    fontWeight: '700',
+  },
+  priorityHigh: { backgroundColor: 'rgba(255, 107, 138, 0.18)' },
+  priorityHighText: { color: colors.danger },
+  priorityMedium: { backgroundColor: 'rgba(255, 184, 92, 0.18)' },
+  priorityMediumText: { color: colors.warning },
+  priorityLow: { backgroundColor: 'rgba(49, 208, 170, 0.18)' },
+  priorityLowText: { color: colors.success },
 });

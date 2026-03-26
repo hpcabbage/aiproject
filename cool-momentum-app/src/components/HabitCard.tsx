@@ -7,9 +7,10 @@ import { getTodayKey } from '../utils/date';
 type Props = {
   habit: Habit;
   onToggle: () => void;
+  onEdit: () => void;
 };
 
-export const HabitCard = ({ habit, onToggle }: Props) => {
+export const HabitCard = ({ habit, onToggle, onEdit }: Props) => {
   const doneToday = habit.completions.includes(getTodayKey());
 
   return (
@@ -22,10 +23,17 @@ export const HabitCard = ({ habit, onToggle }: Props) => {
             <Text style={styles.badgeText}>{categoryLabels[habit.category]}</Text>
           </View>
         </View>
-        <Text style={styles.meta}>连续 {habit.streak} 天 · 点击{doneToday ? '取消' : ''}打卡</Text>
+        <Text style={styles.meta}>
+          连续 {habit.streak} 天 · 点击{doneToday ? '取消' : ''}打卡{habit.reminder?.enabled ? ` · 提醒 ${habit.reminder.time}` : ''}
+        </Text>
       </View>
-      <View style={[styles.badgeAction, doneToday && styles.badgeDone]}>
-        <Ionicons name={doneToday ? 'checkmark' : 'flash'} size={16} color={colors.white} />
+      <View style={styles.actions}>
+        <Pressable onPress={onEdit} hitSlop={10}>
+          <Ionicons name="create-outline" size={20} color={colors.textMuted} />
+        </Pressable>
+        <View style={[styles.badgeAction, doneToday && styles.badgeDone]}>
+          <Ionicons name={doneToday ? 'checkmark' : 'flash'} size={16} color={colors.white} />
+        </View>
       </View>
     </Pressable>
   );
@@ -77,6 +85,13 @@ const styles = StyleSheet.create({
     color: colors.accentSecondary,
     fontSize: 11,
     fontWeight: '700',
+  },
+  actions: {
+    alignSelf: 'stretch',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingVertical: 2,
+    gap: 10,
   },
   badgeAction: {
     width: 32,

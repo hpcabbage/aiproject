@@ -8,9 +8,11 @@ import { TodoCard } from '../components/TodoCard';
 import { HabitCard } from '../components/HabitCard';
 import { colors, gradients } from '../theme/colors';
 import { categoryLabels, Category, Habit, TodoItem } from '../types';
+import { getTodayKey } from '../utils/date';
 
 type Props = {
   todos: TodoItem[];
+  topTodos: TodoItem[];
   habits: Habit[];
   completionRate: number;
   selectedCategory: Category | 'All';
@@ -21,11 +23,14 @@ type Props = {
   onAddPress: () => void;
   onToggleTodo: (id: string) => void;
   onDeleteTodo: (id: string) => void;
+  onEditTodo: (id: string) => void;
   onToggleHabit: (id: string) => void;
+  onEditHabit: (id: string) => void;
 };
 
 export const HomeScreen = ({
   todos,
+  topTodos,
   habits,
   completionRate,
   selectedCategory,
@@ -36,8 +41,19 @@ export const HomeScreen = ({
   onAddPress,
   onToggleTodo,
   onDeleteTodo,
+  onEditTodo,
   onToggleHabit,
+  onEditHabit,
 }: Props) => {
+  const today = getTodayKey();
+  const pendingTodos = todos.filter((item) => !item.done).length;
+  const doneTodos = todos.filter((item) => item.done).length;
+  const habitsDoneToday = habits.filter((habit) => habit.completions.includes(today)).length;
+  const activeHabitCount = habits.filter((habit) => !habit.completions.includes(today)).length;
+  const reminderCount = [...todos.filter((item) => !item.done), ...habits.filter((habit) => !habit.completions.includes(today))].filter(
+    (item) => item.reminder?.enabled,
+  ).length;
+
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
       <LinearGradient colors={gradients.hero} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={styles.hero}>
@@ -49,6 +65,33 @@ export const HomeScreen = ({
         <ProgressRing value={completionRate} />
       </LinearGradient>
 
+      <View style={styles.quickStatsGrid}>
+        <GlassCard style={styles.quickStatCard}>
+          <View style={styles.quickStatInner}>
+            <Text style={styles.quickStatValue}>{pendingTodos}</Text>
+            <Text style={styles.quickStatLabel}>待拿下</Text>
+          </View>
+        </GlassCard>
+        <GlassCard style={styles.quickStatCard}>
+          <View style={styles.quickStatInner}>
+            <Text style={styles.quickStatValue}>{habitsDoneToday}/{Math.max(habits.length, 0)}</Text>
+            <Text style={styles.quickStatLabel}>今日打卡</Text>
+          </View>
+        </GlassCard>
+        <GlassCard style={styles.quickStatCardWide}>
+          <View style={styles.quickStatWideInner}>
+            <View>
+              <Text style={styles.quickStatWideTitle}>提醒中的项目</Text>
+              <Text style={styles.quickStatWideSubtitle}>只统计还没完成、今天还会推动你的条目。</Text>
+            </View>
+            <View style={styles.reminderBadgeLarge}>
+              <Ionicons name="notifications" size={16} color={colors.white} />
+              <Text style={styles.reminderBadgeLargeText}>{reminderCount}</Text>
+            </View>
+          </View>
+        </GlassCard>
+      </View>
+
       <GlassCard>
         <View style={styles.insightCardInner}>
           <View style={styles.insightBadge}>
@@ -58,8 +101,70 @@ export const HomeScreen = ({
             <Text style={styles.insightTitle}>当前节奏</Text>
             <Text style={styles.insightText}>{topCategory}</Text>
           </View>
+          <View style={styles.doneBadge}>
+            <Text style={styles.doneBadgeText}>已完成 {doneTodos}</Text>
+          </View>
         </View>
       </GlassCard>
+
+      <GlassCard>
+        <View style={styles.secondaryInsightRow}>
+          <View style={styles.secondaryInsightItem}>
+            <Text style={styles.secondaryInsightLabel}>未打卡习惯</Text>
+            <Text style={styles.secondaryInsightValue}>{activeHabitCount}</Text>
+          </View>
+          <View style={styles.secondaryDivider} />
+          <View style={styles.secondaryInsightItem}>
+            <Text style={styles.secondaryInsightLabel}>已完成待办</Text>
+            <Text style={styles.secondaryInsightValue}>{doneTodos}</Text>
+          </View>
+          <View style={styles.secondaryDivider} />
+          <View style={styles.secondaryInsightItem}>
+            <Text style={styles.secondaryInsightLabel}>进行中待办</Text>
+            <Text style={styles.secondaryInsightValue}>{pendingTodos}</Text>
+          </View>
+        </View>
+      </GlassCard>
+
+      {topTodos.length ? (
+        <GlassCard>
+          <View style={styles.topFocusInner}>
+            <View style={styles.topFocusHeader}>
+              <View>
+                <Text style={styles.topFocusTitle}>今日 Top 3</Text>
+                <Text style={styles.topFocusSubtitle}>先把最重要的几条砍掉，别被杂事带节奏。</Text>
+              </View>
+              <View style={styles.topFocusBadge}>
+                <Ionicons name="flash" size={16} color={colors.white} />
+              </View>
+            </View>
+            <View style={styles.topFocusList}>
+              {topTodos.map((item, index) => (
+                <TouchableOpacity key={item.id} style={styles.topFocusRow} onPress={() => onEditTodo(item.id)} activeOpacity={0.86}>
+                  <View style={styles.topFocusIndex}>
+                    <Text style={styles.topFocusIndexText}>{index + 1}</Text>
+                  </View>
+                  <View style={styles.topFocusContent}>
+                    <Text style={styles.topFocusText} numberOfLines={1}>
+                      {item.title}
+                    </Text>
+                    <View style={styles.topFocusMetaRow}>
+                      <Text style={styles.topFocusMeta}>{categoryLabels[item.category]}</Text>
+                      {item.reminder?.enabled ? (
+                        <View style={styles.inlineReminderBadge}>
+                          <Ionicons name="notifications-outline" size={12} color={colors.warning} />
+                          <Text style={styles.inlineReminderText}>{item.reminder.time}</Text>
+                        </View>
+                      ) : null}
+                    </View>
+                  </View>
+                  <Ionicons name="chevron-forward" size={18} color={colors.textMuted} />
+                </TouchableOpacity>
+              ))}
+            </View>
+          </View>
+        </GlassCard>
+      ) : null}
 
       <View style={styles.filtersRow}>
         {categories.map((category) => {
@@ -90,7 +195,13 @@ export const HomeScreen = ({
         <View style={styles.list}>
           {todos.length ? (
             todos.map((item) => (
-              <TodoCard key={item.id} item={item} onToggle={() => onToggleTodo(item.id)} onDelete={() => onDeleteTodo(item.id)} />
+              <TodoCard
+                key={item.id}
+                item={item}
+                onToggle={() => onToggleTodo(item.id)}
+                onDelete={() => onDeleteTodo(item.id)}
+                onEdit={() => onEditTodo(item.id)}
+              />
             ))
           ) : (
             <Text style={styles.emptyText}>这个分类下面现在没有待办，干净得像刚刚清过桌面。</Text>
@@ -102,7 +213,9 @@ export const HomeScreen = ({
         <SectionTitle title="习惯打卡" subtitle="小动作，靠连续性变强" />
         <View style={styles.list}>
           {habits.length ? (
-            habits.map((habit) => <HabitCard key={habit.id} habit={habit} onToggle={() => onToggleHabit(habit.id)} />)
+            habits.map((habit) => (
+              <HabitCard key={habit.id} habit={habit} onToggle={() => onToggleHabit(habit.id)} onEdit={() => onEditHabit(habit.id)} />
+            ))
           ) : (
             <Text style={styles.emptyText}>这个分类下面还没有习惯，正好补一条新的长期动作。</Text>
           )}
@@ -142,6 +255,32 @@ const styles = StyleSheet.create({
     lineHeight: 21,
     maxWidth: 280,
   },
+  quickStatsGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 12 },
+  quickStatCard: { width: '48%' },
+  quickStatCardWide: { width: '100%' },
+  quickStatInner: { minHeight: 96, padding: 16, justifyContent: 'center', gap: 6 },
+  quickStatWideInner: {
+    minHeight: 88,
+    padding: 16,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    gap: 12,
+  },
+  quickStatValue: { color: colors.text, fontSize: 28, fontWeight: '800' },
+  quickStatLabel: { color: colors.textMuted, fontSize: 12, fontWeight: '700' },
+  quickStatWideTitle: { color: colors.text, fontSize: 16, fontWeight: '800' },
+  quickStatWideSubtitle: { marginTop: 6, color: colors.textMuted, fontSize: 12, lineHeight: 18, maxWidth: 220 },
+  reminderBadgeLarge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    paddingHorizontal: 12,
+    paddingVertical: 10,
+    borderRadius: 999,
+    backgroundColor: 'rgba(124, 92, 255, 0.28)',
+  },
+  reminderBadgeLargeText: { color: colors.white, fontSize: 13, fontWeight: '800' },
   insightCardInner: {
     paddingHorizontal: 18,
     paddingVertical: 16,
@@ -160,6 +299,70 @@ const styles = StyleSheet.create({
   insightBody: { flex: 1, gap: 4 },
   insightTitle: { color: colors.textMuted, fontSize: 12, fontWeight: '700' },
   insightText: { color: colors.text, fontSize: 16, fontWeight: '700' },
+  doneBadge: {
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    borderRadius: 999,
+    backgroundColor: 'rgba(49, 208, 170, 0.16)',
+  },
+  doneBadgeText: { color: colors.success, fontSize: 12, fontWeight: '800' },
+  secondaryInsightRow: {
+    paddingHorizontal: 18,
+    paddingVertical: 16,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    gap: 12,
+  },
+  secondaryInsightItem: { flex: 1, gap: 6, alignItems: 'center' },
+  secondaryInsightLabel: { color: colors.textMuted, fontSize: 12, fontWeight: '700' },
+  secondaryInsightValue: { color: colors.text, fontSize: 20, fontWeight: '800' },
+  secondaryDivider: { width: 1, alignSelf: 'stretch', backgroundColor: colors.border },
+  topFocusInner: { paddingHorizontal: 18, paddingVertical: 16, gap: 14 },
+  topFocusHeader: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 12 },
+  topFocusTitle: { color: colors.text, fontSize: 18, fontWeight: '800' },
+  topFocusSubtitle: { marginTop: 4, color: colors.textMuted, fontSize: 12, lineHeight: 18, maxWidth: 240 },
+  topFocusBadge: {
+    width: 34,
+    height: 34,
+    borderRadius: 17,
+    backgroundColor: colors.accent,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  topFocusList: { gap: 10 },
+  topFocusRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+    paddingHorizontal: 12,
+    paddingVertical: 12,
+    borderRadius: 16,
+    backgroundColor: 'rgba(255,255,255,0.04)',
+  },
+  topFocusIndex: {
+    width: 24,
+    height: 24,
+    borderRadius: 999,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: colors.accent,
+  },
+  topFocusIndexText: { color: colors.white, fontSize: 12, fontWeight: '800' },
+  topFocusContent: { flex: 1, gap: 4 },
+  topFocusText: { color: colors.text, fontSize: 14, fontWeight: '700' },
+  topFocusMetaRow: { flexDirection: 'row', alignItems: 'center', gap: 8, flexWrap: 'wrap' },
+  topFocusMeta: { color: colors.textMuted, fontSize: 11, fontWeight: '700' },
+  inlineReminderBadge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 999,
+    backgroundColor: 'rgba(255,184,92,0.14)',
+  },
+  inlineReminderText: { color: colors.warning, fontSize: 11, fontWeight: '700' },
   filtersRow: {
     flexDirection: 'row',
     flexWrap: 'wrap',

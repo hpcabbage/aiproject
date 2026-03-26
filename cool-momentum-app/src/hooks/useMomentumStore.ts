@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
-import { AppState, Category, DraftMode, categories } from '../types';
+import { AppState, Category, DraftMode, Priority, Reminder, categories } from '../types';
 import { defaultState, loadState, saveState } from '../storage/appStorage';
 import { getTodayKey } from '../utils/date';
 
@@ -29,8 +29,26 @@ export const useMomentumStore = () => {
   const totalDone = todoCompleted + habitsCompleted;
   const completionRate = totalTrackable === 0 ? 0 : (totalDone / totalTrackable) * 100;
 
+  const priorityWeight: Record<Priority, number> = {
+    High: 0,
+    Medium: 1,
+    Low: 2,
+  };
+
+  const sortedTodos = [...state.todos].sort((a, b) => {
+    if (a.done !== b.done) {
+      return Number(a.done) - Number(b.done);
+    }
+
+    if (priorityWeight[a.priority] !== priorityWeight[b.priority]) {
+      return priorityWeight[a.priority] - priorityWeight[b.priority];
+    }
+
+    return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+  });
+
   const filteredTodos =
-    selectedCategory === 'All' ? state.todos : state.todos.filter((item) => item.category === selectedCategory);
+    selectedCategory === 'All' ? sortedTodos : sortedTodos.filter((item) => item.category === selectedCategory);
   const filteredHabits =
     selectedCategory === 'All' ? state.habits : state.habits.filter((item) => item.category === selectedCategory);
 
@@ -49,7 +67,7 @@ export const useMomentumStore = () => {
     [completionRate, filteredHabits.length, filteredTodos.length, habitsCompleted, state.habits, state.todos.length, todoCompleted, totalDone, totalTrackable],
   );
 
-  const addItem = (mode: DraftMode, value: string, category: Category) => {
+  const addItem = (mode: DraftMode, value: string, category: Category, priority: Priority = 'Medium', reminder?: Reminder) => {
     const title = value.trim();
     if (!title) {
       return;
@@ -64,7 +82,9 @@ export const useMomentumStore = () => {
             title,
             done: false,
             category,
+            priority,
             createdAt: new Date().toISOString(),
+            reminder: reminder ?? { enabled: false, time: '09:00' },
           },
           ...current.todos,
         ],
@@ -83,23 +103,106 @@ export const useMomentumStore = () => {
           streak: 0,
           completions: [],
           createdAt: new Date().toISOString(),
+          reminder: reminder ?? { enabled: false, time: '09:00' },
         },
         ...current.habits,
       ],
     }));
   };
 
-  const toggleTodo = (id: string) => {
+  const toggleTodo = (id: string): AppState['todos'][number] | null => {
+    let toggledTodo: AppState['todos'][number] | null = null;
+
     setState((current) => ({
       ...current,
-      todos: current.todos.map((todo) => (todo.id === id ? { ...todo, done: !todo.done } : todo)),
+      todos: current.todos.map((todo) => {
+        if (todo.id !== id) {
+          return todo;
+        }
+
+        const nextDone = !todo.done;
+        const previousReminder = todo.reminder ?? { enabled: false, time: '09:00' };
+
+        toggledTodo = {
+          ...todo,
+          done: nextDone,
+          completedAt: nextDone ? new Date().toISOString() : undefined,
+          reminder: nextDone
+            ? {
+                ...previousReminder,
+                enabled: false,
+                notificationId: undefined,
+                resumeEnabledOnUndo: previousReminder.enabled,
+              }
+            : {
+                ...previousReminder,
+                enabled: previousReminder.resumeEnabledOnUndo ?? previousReminder.enabled,
+                notificationId: undefined,
+                resumeEnabledOnUndo: undefined,
+              },
+        };
+
+        return toggledTodo;
+      }),
     }));
+
+    return toggledTodo;
   };
 
   const deleteTodo = (id: string) => {
     setState((current) => ({
       ...current,
       todos: current.todos.filter((todo) => todo.id !== id),
+    }));
+  };
+
+  const updateTodo = (id: string, payload: { title: string; category: Category; priority: Priority; reminder?: Reminder }) => {
+    const title = payload.title.trim();
+    if (!title) {
+      return;
+    }
+
+    setState((current) => ({
+      ...current,
+      todos: current.todos.map((todo) =>
+        todo.id === id
+          ? {
+              ...todo,
+              title,
+              category: payload.category,
+              priority: payload.priority,
+              reminder: payload.reminder ?? todo.reminder ?? { enabled: false, time: '09:00' },
+            }
+          : todo,
+      ),
+    }));
+  };
+
+  const deleteHabit = (id: string) => {
+    setState((current) => ({
+      ...current,
+      habits: current.habits.filter((habit) => habit.id !== id),
+    }));
+  };
+
+  const updateHabit = (id: string, payload: { name: string; category: Category; reminder?: Reminder }) => {
+    const name = payload.name.trim();
+    if (!name) {
+      return;
+    }
+
+    setState((current) => ({
+      ...current,
+      habits: current.habits.map((habit) =>
+        habit.id === id
+          ? {
+              ...habit,
+              name,
+              category: payload.category,
+              reminder: payload.reminder ?? habit.reminder ?? { enabled: false, time: '09:00' },
+            }
+          : habit,
+      ),
     }));
   };
 
@@ -138,6 +241,9 @@ export const useMomentumStore = () => {
     addItem,
     toggleTodo,
     deleteTodo,
+    updateTodo,
+    deleteHabit,
+    updateHabit,
     toggleHabit,
   };
 };
