@@ -273,7 +273,7 @@ const styles = StyleSheet.create({
   metricMeta: { color: colors.textMuted, fontSize: 12 },
   summaryInner: { padding: 18, gap: 10 },
   summaryEyebrow: { color: colors.textMuted, fontSize: 12, fontWeight: '700' },
-  summaryTitle: { color: colors.text, fontSize: 20, fontWeight: '800' },
+  summaryTitle: { color: colors.text, fontSize: 18, fontWeight: '800' },
   summaryRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 10 },
   summaryBadge: {
     minWidth: 72,
@@ -285,7 +285,7 @@ const styles = StyleSheet.create({
   },
   summaryBadgeLabel: { color: colors.textMuted, fontSize: 11, fontWeight: '700' },
   summaryBadgeValue: { color: colors.text, fontSize: 16, fontWeight: '800' },
-  trendInner: { padding: 18, gap: 14 },
+  trendInner: { padding: 14, gap: 10 },
   trendHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', gap: 12 },
   trendSwitch: {
     flexDirection: 'row',

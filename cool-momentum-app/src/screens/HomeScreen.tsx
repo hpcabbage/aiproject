@@ -239,7 +239,7 @@ export const HomeScreen = ({
 
 const styles = StyleSheet.create({
   container: { flex: 1 },
-  content: { padding: 20, paddingBottom: 120, gap: 18 },
+  content: { padding: 20, paddingBottom: 132, gap: 18 },
   hero: {
     borderRadius: 30,
     padding: 22,
@@ -256,10 +256,10 @@ const styles = StyleSheet.create({
   },
   heroTitle: {
     color: colors.white,
-    fontSize: 32,
-    lineHeight: 38,
+    fontSize: 30,
+    lineHeight: 35,
     fontWeight: '800',
-    maxWidth: 220,
+    maxWidth: 250,
   },
   heroSubtitle: {
     color: 'rgba(255,255,255,0.84)',
