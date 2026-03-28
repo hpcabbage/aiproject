@@ -1,7 +1,7 @@
 # AI2AI Latest
 
 ## 当前结论
-这一轮复看已经把“最后一类问题”的判断收清了：主页/统计页切换后的心智其实已经成立，真正还影响人使用感受的不是解释不够，而是底部 tab 对首屏内容的遮挡。基于设备截图，我已把最后一轮重点转成“统一解决首屏遮挡”，而不是继续堆说明文案。
+这轮已完成“提交前圈定范围”的第一步：审过本轮核心 diff 后，可以确认 tab 压缩、首页首屏密度收口、统计页首屏密度收口与 section 标题节奏调整这四类改动是同一问题链路上的有效提交候选；但工作区里还混有 `HabitCard.tsx`、`TodoCard.tsx` 等未纳入本轮目标的历史改动，因此下一步应先按文件精确暂存本轮目标文件，再提交，避免把无关修改一并带入。当前判断没有变化：首屏明显遮挡已收住，状态达到“可整理提交”的门槛。
 
 ## 当前项目
 - 项目：`cool-momentum-app`
@@ -22,19 +22,41 @@
 - 状态：待本轮自测后整理
 
 ## 本轮已完成
-1. 已复看主页当前设备截图：`preview-home-current.png`
-   - 结论：首页“看行动”的心智已经成立
-   - 新发现：首屏第三张摘要卡仍被底部 tab 压住，信息流被截断
-2. 已复看统计页当前设备截图：`preview-stats-current.png`
-   - 结论：统计页“看反馈”的心智也已经成立
-   - 新发现：底部 tab 同样压住统计页首屏下沿，导致反馈流被打断
-3. 已确认删除确认态目前逻辑已经补上，当前更主要的问题不再是它过重，而是两页共享的 tab 遮挡
-4. 已据此做最后一轮统一收口：
-   - `App.tsx`：`bodyContent` 底部留白从 `164` 提到 `188`
-   - `App.tsx`：tabBar `bottom` 从 `16` 调到 `10`
-   - `App.tsx`：tabBar 圆角与 padding 略收，减轻悬浮块对内容的压迫感
-5. 已再次执行类型检查：`cd /home/cabbage/.openclaw/workspace/cool-momentum-app && npx tsc --noEmit`
-6. 结果：通过
+1. 已延续上一轮结论，继续只围绕底部 tab 遮挡这一件事推进，没有扩散到文案或交互逻辑。
+2. 已在 `cool-momentum-app/App.tsx` 对底部 tab 做更直接的压缩：
+   - 两个 tab 图标尺寸从 `18` 降到 `16`
+   - `tabBar.bottom` 从 `10` 调到 `6`
+   - `tabBar` 圆角从 `16` 收到 `14`
+   - `tabBar` padding 从统一 `5` 改为 `paddingHorizontal: 4` + `paddingVertical: 4`
+   - `tabBar` 内部 gap 从 `8` 收到 `6`
+   - 单个 `tab` 圆角从 `15` 收到 `12`
+   - 单个 `tab` 最小高度从 `44` 降到 `40`
+   - 单个 `tab` 垂直 padding 从 `10` 收到 `8`
+3. 已沿既有链路重新跑起 web 预览，并改用 WSL 局域网地址给 Windows Edge 无头截图：
+   - 主页截图：`preview-home-current.png`
+   - 统计页截图：`preview-stats-current.png`
+   - 截图时增加 `--virtual-time-budget=8000`，避免只截到 loading 态
+4. 已根据第一轮复看结果确认：单靠缩 tab 与继续加共享底部安全区都不足以解决首屏遮挡。
+5. 已继续做一轮更有效但仍克制的首屏密度压缩：
+   - `src/screens/HomeScreen.tsx`：收紧 hero 区高度、标题/副标题字号、Top 3 卡片 padding、摘要卡尺寸与筛选 pill 垂直高度
+   - `src/screens/StatsScreen.tsx`：收紧首屏卡片高度、趋势卡 padding、指标卡高度、分类/洞察卡 padding
+   - `src/components/SectionTitle.tsx`：略收标题字号与副标题行高，统一两页 section 标题节奏
+6. 已再次补齐主页与统计页设备截图复看。
+7. 本轮复看结论：
+   - 首页已能在 tab 上方完整看到“今日待办”标题与首条待办开头，首屏不再被明显切断
+   - 统计页已能在 tab 上方完整看到“洞察”标题与首行洞察信息，反馈流恢复连续
+   - 目前剩余的是“底部仍略紧”，但已不再是阻止提交的明显遮挡问题
+8. 已执行类型检查：`cd /home/cabbage/.openclaw/workspace/cool-momentum-app && npx tsc --noEmit`
+9. 结果：通过
+10. 为避免把运行态改动带进代码，统计页截图时临时把默认 tab 切到 `stats`，完成后已恢复 `home`。
+11. 已审本轮相关 diff，并确认本轮目标提交范围应只包含：
+   - `App.tsx`
+   - `src/screens/HomeScreen.tsx`
+   - `src/screens/StatsScreen.tsx`
+   - `src/components/SectionTitle.tsx`
+   - `preview-home-current.png`
+   - `preview-stats-current.png`
+12. 已确认工作区还存在与本轮目标无关的改动：`src/components/HabitCard.tsx`、`src/components/TodoCard.tsx`；提交时需要排除。
 
 ## 当前决策
 ### 决策 1：停止继续补心智文案，转为统一解决遮挡问题
@@ -53,18 +75,22 @@
 - 设备视角验证：
   - `preview-home-current.png`
   - `preview-stats-current.png`
-  已完成复看并用于指导本轮调整
+- diff 审核验证：
+  - 已执行 `git -C /home/cabbage/.openclaw/workspace/cool-momentum-app status --short` 与目标文件级 `git diff`
+  - 已确认本轮目标改动集中在 `App.tsx`、`HomeScreen.tsx`、`StatsScreen.tsx`、`SectionTitle.tsx` 与两张截图
+  - 已确认 `HabitCard.tsx`、`TodoCard.tsx` 属于当前提交范围外的现存改动
+- 当前可确认结论：
+  - 单靠压缩 tab 与增加底部安全区，不足以消除首屏遮挡
+  - 在同步压缩首页 / 统计页首屏垂直密度后，两页首屏核心内容都已回到 tab 上沿之上
+  - 当前状态已达到“可整理提交”的门槛，不再是明显的首屏截断
 
 ## 当前风险
-1. 还需要再补一轮设备截图，确认 tab 遮挡是否真的被压下去了。
-2. 本轮改动尚未提交，需要等复看确认后再整理。
-3. 这轮已经进入最后抛光，继续改动要非常克制，避免重新引入密度问题。
+1. 当前已基本收掉明显遮挡，但首屏底部仍偏紧，若后续继续追求更松弛的视觉留白，可能要在信息密度与首屏完整性之间继续权衡。
+2. 工作区中混有 `HabitCard.tsx`、`TodoCard.tsx` 等本轮目标外改动，若下一步暂存范围控制不严，容易把历史修改一并提交。
+3. 统计页当前是“刚好越过明显遮挡线”，若后续再往首屏里塞新内容，容易重新触发同类问题。
 
 ## 变更文件
 - RESP/AI2AI/latest.md
-- cool-momentum-app/App.tsx
-- cool-momentum-app/preview-home-current.png
-- cool-momentum-app/preview-stats-current.png
 
 ## Next Action
-沿现有截图链路再补一轮主页与统计页设备截图，确认底部 tab 遮挡是否已被明显缓解；若确认有效，就整理这轮人视角自测与 polish 改动为一次中文提交。
+在 `cool-momentum-app` 中只暂存本轮目标文件（`App.tsx`、`src/screens/HomeScreen.tsx`、`src/screens/StatsScreen.tsx`、`src/components/SectionTitle.tsx`、`preview-home-current.png`、`preview-stats-current.png`），复核 staged diff 后做一次中文提交。

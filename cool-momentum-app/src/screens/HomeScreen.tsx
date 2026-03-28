@@ -49,96 +49,48 @@ export const HomeScreen = ({
   const pendingTodos = todos.filter((item) => !item.done).length;
   const doneTodos = todos.filter((item) => item.done).length;
   const habitsDoneToday = habits.filter((habit) => habit.completions.includes(today)).length;
-  const activeHabitCount = habits.filter((habit) => !habit.completions.includes(today)).length;
   const reminderCount = [...todos.filter((item) => !item.done), ...habits.filter((habit) => !habit.completions.includes(today))].filter(
     (item) => item.reminder?.enabled,
   ).length;
 
   const emptyTodoText =
     selectedCategory === 'All'
-      ? '今天的待办列表还是空的，先丢一条真正要推进的事进来。'
-      : `当前筛选在「${categoryLabels[selectedCategory]}」，这个分类下面还没有待办，补一条最关键的行动项吧。`;
+      ? '今天还没有待办。先放一条真正要推进的事。'
+      : `「${categoryLabels[selectedCategory]}」里还没有待办。`;
   const emptyHabitText =
     selectedCategory === 'All'
-      ? '今天还没有习惯卡片，挑一个最值得长期坚持的动作开始。'
-      : `当前筛选在「${categoryLabels[selectedCategory]}」，这个分类下面还没有习惯，正好补一条长期会复利的动作。`;
+      ? '今天还没有习惯。先放一条值得长期坚持的动作。'
+      : `「${categoryLabels[selectedCategory]}」里还没有习惯。`;
 
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
       <LinearGradient colors={gradients.hero} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={styles.hero}>
-        <View style={styles.heroTextBlock}>
-          <Text style={styles.kicker}>MOMENTUM V2</Text>
-          <Text style={styles.heroTitle}>今天别散，狠狠干完。</Text>
-          <Text style={styles.heroSubtitle}>{focusMessage}</Text>
-          <Text style={styles.heroGuide}>先看今日 Top 3，再从下面列表里推进；切分类时，空状态会告诉你缺什么。</Text>
+        <View style={styles.heroHeader}>
+          <View style={styles.heroTextBlock}>
+            <Text style={styles.kicker}>TODAY</Text>
+            <Text style={styles.heroTitle}>先把最重要的事推掉。</Text>
+            <Text style={styles.heroSubtitle}>{focusMessage}</Text>
+          </View>
+          <ProgressRing value={completionRate} />
         </View>
-        <ProgressRing value={completionRate} />
+
+        <View style={styles.heroFooter}>
+          <View style={styles.heroMetric}>
+            <Text style={styles.heroMetricValue}>{pendingTodos}</Text>
+            <Text style={styles.heroMetricLabel}>进行中</Text>
+          </View>
+          <View style={styles.heroDivider} />
+          <View style={styles.heroMetric}>
+            <Text style={styles.heroMetricValue}>{habitsDoneToday}</Text>
+            <Text style={styles.heroMetricLabel}>已打卡</Text>
+          </View>
+          <View style={styles.heroDivider} />
+          <View style={styles.heroMetric}>
+            <Text style={styles.heroMetricValue}>{reminderCount}</Text>
+            <Text style={styles.heroMetricLabel}>提醒中</Text>
+          </View>
+        </View>
       </LinearGradient>
-
-      <View style={styles.summaryBlock}>
-        <View style={styles.quickStatsGrid}>
-          <GlassCard style={styles.quickStatCard}>
-            <View style={styles.quickStatInner}>
-              <Text style={styles.quickStatValue}>{pendingTodos}</Text>
-              <Text style={styles.quickStatLabel}>待拿下</Text>
-              <Text style={styles.quickStatHint}>优先清最关键的待办，别把注意力散掉。</Text>
-            </View>
-          </GlassCard>
-          <GlassCard style={styles.quickStatCard}>
-            <View style={styles.quickStatInner}>
-              <Text style={styles.quickStatValue}>{habitsDoneToday}/{Math.max(habits.length, 0)}</Text>
-              <Text style={styles.quickStatLabel}>今日打卡</Text>
-              <Text style={styles.quickStatHint}>把今天该完成的动作点亮，节奏会更稳。</Text>
-            </View>
-          </GlassCard>
-          <GlassCard style={styles.quickStatCardWide}>
-            <View style={styles.quickStatWideInner}>
-              <View>
-                <Text style={styles.quickStatWideTitle}>提醒中的项目</Text>
-                <Text style={styles.quickStatWideSubtitle}>只统计今天还会继续推着你走的条目。</Text>
-              </View>
-              <View style={styles.reminderBadgeLarge}>
-                <Ionicons name="notifications" size={16} color={colors.white} />
-                <Text style={styles.reminderBadgeLargeText}>{reminderCount}</Text>
-              </View>
-            </View>
-          </GlassCard>
-        </View>
-
-        <GlassCard>
-          <View style={styles.insightCardInner}>
-            <View style={styles.insightBadge}>
-              <Ionicons name="pulse" size={16} color={colors.white} />
-            </View>
-            <View style={styles.insightBody}>
-              <Text style={styles.insightTitle}>当前节奏</Text>
-              <Text style={styles.insightText}>{topCategory}</Text>
-            </View>
-            <View style={styles.doneBadge}>
-              <Text style={styles.doneBadgeText}>已完成 {doneTodos}</Text>
-            </View>
-          </View>
-        </GlassCard>
-
-        <GlassCard>
-          <View style={styles.secondaryInsightRow}>
-            <View style={styles.secondaryInsightItem}>
-              <Text style={styles.secondaryInsightLabel}>未打卡习惯</Text>
-              <Text style={styles.secondaryInsightValue}>{activeHabitCount}</Text>
-            </View>
-            <View style={styles.secondaryDivider} />
-            <View style={styles.secondaryInsightItem}>
-              <Text style={styles.secondaryInsightLabel}>已完成待办</Text>
-              <Text style={styles.secondaryInsightValue}>{doneTodos}</Text>
-            </View>
-            <View style={styles.secondaryDivider} />
-            <View style={styles.secondaryInsightItem}>
-              <Text style={styles.secondaryInsightLabel}>进行中待办</Text>
-              <Text style={styles.secondaryInsightValue}>{pendingTodos}</Text>
-            </View>
-          </View>
-        </GlassCard>
-      </View>
 
       {topTodos.length ? (
         <GlassCard>
@@ -146,7 +98,7 @@ export const HomeScreen = ({
             <View style={styles.topFocusHeader}>
               <View>
                 <Text style={styles.topFocusTitle}>今日 Top 3</Text>
-                <Text style={styles.topFocusSubtitle}>先把最重要的几条砍掉，别被杂事带节奏。</Text>
+                <Text style={styles.topFocusSubtitle}>先完成它们，今天就不会跑偏。</Text>
               </View>
               <View style={styles.topFocusBadge}>
                 <Ionicons name="flash" size={16} color={colors.white} />
@@ -167,14 +119,9 @@ export const HomeScreen = ({
                       {item.reminder?.enabled ? (
                         <View style={styles.inlineReminderBadge}>
                           <Ionicons name="notifications-outline" size={12} color={colors.warning} />
-                          <Text style={styles.inlineReminderText}>提醒 {item.reminder.time}</Text>
+                          <Text style={styles.inlineReminderText}>{item.reminder.time}</Text>
                         </View>
-                      ) : (
-                        <View style={styles.inlineReminderBadgeMuted}>
-                          <Ionicons name="notifications-off-outline" size={12} color={colors.textMuted} />
-                          <Text style={styles.inlineReminderTextMuted}>未开启提醒</Text>
-                        </View>
-                      )}
+                      ) : null}
                     </View>
                   </View>
                   <Ionicons name="chevron-forward" size={18} color={colors.textMuted} />
@@ -184,6 +131,22 @@ export const HomeScreen = ({
           </View>
         </GlassCard>
       ) : null}
+
+      <View style={styles.summaryRow}>
+        <GlassCard style={styles.summaryCardPrimary}>
+          <View style={styles.summaryCardInnerPrimary}>
+            <Text style={styles.summaryCardEyebrow}>当前节奏</Text>
+            <Text style={styles.summaryCardValue}>{topCategory}</Text>
+            <Text style={styles.summaryCardMeta}>已完成 {doneTodos} 项</Text>
+          </View>
+        </GlassCard>
+        <GlassCard style={styles.summaryCardSecondary}>
+          <View style={styles.summaryCardInnerSecondary}>
+            <Text style={styles.summaryCardMiniValue}>{reminderCount}</Text>
+            <Text style={styles.summaryCardMiniLabel}>提醒中</Text>
+          </View>
+        </GlassCard>
+      </View>
 
       <View style={styles.filtersRow}>
         {categories.map((category) => {
@@ -197,20 +160,8 @@ export const HomeScreen = ({
         })}
       </View>
 
-      <GlassCard style={styles.quickCard}>
-        <View style={styles.quickCardInner}>
-          <View>
-            <Text style={styles.quickTitle}>开始推进</Text>
-            <Text style={styles.quickSubtitle}>新增一条要推进的事，或者补上一条会长期复利的习惯。</Text>
-          </View>
-          <TouchableOpacity style={styles.addButton} onPress={onAddPress}>
-            <Ionicons name="add" size={22} color={colors.white} />
-          </TouchableOpacity>
-        </View>
-      </GlassCard>
-
       <View style={styles.section}>
-        <SectionTitle title="今日待办" subtitle="只摆真正要推进的事，完成一条就少一条噪音。" />
+        <SectionTitle title="今日待办" subtitle="今天真正要推进的事。" />
         <View style={styles.list}>
           {todos.length ? (
             todos.map((item) => (
@@ -228,8 +179,20 @@ export const HomeScreen = ({
         </View>
       </View>
 
+      <GlassCard style={styles.quickCard}>
+        <View style={styles.quickCardInner}>
+          <View>
+            <Text style={styles.quickTitle}>新增内容</Text>
+            <Text style={styles.quickSubtitle}>把新的待办或习惯放进面板。</Text>
+          </View>
+          <TouchableOpacity style={styles.addButton} onPress={onAddPress}>
+            <Ionicons name="add" size={22} color={colors.white} />
+          </TouchableOpacity>
+        </View>
+      </GlassCard>
+
       <View style={styles.section}>
-        <SectionTitle title="习惯打卡" subtitle="每天点亮一点，靠连续性把状态慢慢抬上去。" />
+        <SectionTitle title="习惯" subtitle="每天点亮，长期复利。" />
         <View style={styles.list}>
           {habits.length ? (
             habits.map((habit) => (
@@ -246,109 +209,54 @@ export const HomeScreen = ({
 
 const styles = StyleSheet.create({
   container: { flex: 1 },
-  content: { padding: 20, paddingBottom: 132, gap: 16 },
+  content: { padding: 20, paddingBottom: 132, gap: 14 },
   hero: {
-    borderRadius: 30,
-    padding: 22,
-    minHeight: 210,
-    justifyContent: 'space-between',
-    gap: 18,
+    borderRadius: 28,
+    padding: 20,
+    minHeight: 204,
+    gap: 14,
   },
-  heroTextBlock: { gap: 10 },
+  heroHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'flex-start',
+    gap: 14,
+  },
+  heroTextBlock: { flex: 1, gap: 6 },
   kicker: {
-    color: 'rgba(255,255,255,0.72)',
-    letterSpacing: 3,
-    fontSize: 12,
+    color: 'rgba(255,255,255,0.68)',
+    letterSpacing: 2,
+    fontSize: 11,
     fontWeight: '700',
   },
   heroTitle: {
     color: colors.white,
-    fontSize: 30,
-    lineHeight: 35,
+    fontSize: 26,
+    lineHeight: 32,
     fontWeight: '800',
-    maxWidth: 250,
+    maxWidth: 220,
   },
   heroSubtitle: {
-    color: 'rgba(255,255,255,0.84)',
-    fontSize: 14,
-    lineHeight: 21,
-    maxWidth: 280,
+    color: 'rgba(255,255,255,0.82)',
+    fontSize: 13,
+    lineHeight: 19,
+    maxWidth: 260,
   },
-  heroGuide: {
-    color: 'rgba(255,255,255,0.72)',
-    fontSize: 12,
-    lineHeight: 18,
-    maxWidth: 280,
-  },
-  summaryBlock: { gap: 12 },
-  quickStatsGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 10 },
-  quickStatCard: { width: '48%' },
-  quickStatCardWide: { width: '100%' },
-  quickStatInner: { minHeight: 104, padding: 16, justifyContent: 'center', gap: 6 },
-  quickStatWideInner: {
-    minHeight: 88,
-    padding: 16,
+  heroFooter: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
     gap: 12,
+    paddingTop: 6,
   },
-  quickStatValue: { color: colors.text, fontSize: 28, fontWeight: '800' },
-  quickStatLabel: { color: colors.textMuted, fontSize: 12, fontWeight: '700' },
-  quickStatHint: { color: colors.textMuted, fontSize: 10, lineHeight: 15 },
-  quickStatWideTitle: { color: colors.text, fontSize: 16, fontWeight: '800' },
-  quickStatWideSubtitle: { marginTop: 6, color: colors.textMuted, fontSize: 12, lineHeight: 18, maxWidth: 220 },
-  reminderBadgeLarge: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 6,
-    paddingHorizontal: 12,
-    paddingVertical: 10,
-    borderRadius: 999,
-    backgroundColor: 'rgba(124, 92, 255, 0.28)',
-  },
-  reminderBadgeLargeText: { color: colors.white, fontSize: 13, fontWeight: '800' },
-  insightCardInner: {
-    paddingHorizontal: 18,
-    paddingVertical: 14,
-    flexDirection: 'row',
-    gap: 14,
-    alignItems: 'center',
-  },
-  insightBadge: {
-    width: 36,
-    height: 36,
-    borderRadius: 18,
-    backgroundColor: colors.accent,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  insightBody: { flex: 1, gap: 4 },
-  insightTitle: { color: colors.textMuted, fontSize: 12, fontWeight: '700' },
-  insightText: { color: colors.text, fontSize: 16, fontWeight: '700' },
-  doneBadge: {
-    paddingHorizontal: 12,
-    paddingVertical: 8,
-    borderRadius: 999,
-    backgroundColor: 'rgba(49, 208, 170, 0.16)',
-  },
-  doneBadgeText: { color: colors.success, fontSize: 12, fontWeight: '800' },
-  secondaryInsightRow: {
-    paddingHorizontal: 18,
-    paddingVertical: 16,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    gap: 12,
-  },
-  secondaryInsightItem: { flex: 1, gap: 6, alignItems: 'center' },
-  secondaryInsightLabel: { color: colors.textMuted, fontSize: 12, fontWeight: '700' },
-  secondaryInsightValue: { color: colors.text, fontSize: 20, fontWeight: '800' },
-  secondaryDivider: { width: 1, alignSelf: 'stretch', backgroundColor: colors.border },
-  topFocusInner: { paddingHorizontal: 18, paddingVertical: 16, gap: 12 },
+  heroMetric: { flex: 1, gap: 4, alignItems: 'center' },
+  heroMetricValue: { color: colors.white, fontSize: 22, fontWeight: '800' },
+  heroMetricLabel: { color: 'rgba(255,255,255,0.68)', fontSize: 11, fontWeight: '700' },
+  heroDivider: { width: 1, alignSelf: 'stretch', backgroundColor: 'rgba(255,255,255,0.12)' },
+  topFocusInner: { paddingHorizontal: 16, paddingVertical: 16, gap: 10 },
   topFocusHeader: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 12 },
-  topFocusTitle: { color: colors.text, fontSize: 18, fontWeight: '800' },
-  topFocusSubtitle: { marginTop: 4, color: colors.textMuted, fontSize: 12, lineHeight: 18, maxWidth: 240 },
+  topFocusTitle: { color: colors.text, fontSize: 20, fontWeight: '800' },
+  topFocusSubtitle: { marginTop: 4, color: colors.textMuted, fontSize: 12, lineHeight: 18 },
   topFocusBadge: {
     width: 34,
     height: 34,
@@ -377,7 +285,7 @@ const styles = StyleSheet.create({
   },
   topFocusIndexText: { color: colors.white, fontSize: 12, fontWeight: '800' },
   topFocusContent: { flex: 1, gap: 4 },
-  topFocusText: { color: colors.text, fontSize: 14, fontWeight: '700' },
+  topFocusText: { color: colors.text, fontSize: 15, fontWeight: '700' },
   topFocusMetaRow: { flexDirection: 'row', alignItems: 'center', gap: 8, flexWrap: 'wrap' },
   topFocusMeta: { color: colors.textMuted, fontSize: 11, fontWeight: '700' },
   inlineReminderBadge: {
@@ -390,69 +298,57 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(255,184,92,0.14)',
   },
   inlineReminderText: { color: colors.warning, fontSize: 11, fontWeight: '700' },
-  inlineReminderBadgeMuted: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 4,
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-    borderRadius: 999,
-    backgroundColor: 'rgba(255,255,255,0.05)',
-  },
-  inlineReminderTextMuted: { color: colors.textMuted, fontSize: 11, fontWeight: '700' },
+  summaryRow: { flexDirection: 'row', gap: 10 },
+  summaryCardPrimary: { flex: 1 },
+  summaryCardSecondary: { width: 104 },
+  summaryCardInnerPrimary: { padding: 16, gap: 4 },
+  summaryCardInnerSecondary: { padding: 16, gap: 4, alignItems: 'center', justifyContent: 'center', minHeight: 92 },
+  summaryCardEyebrow: { color: colors.textMuted, fontSize: 11, fontWeight: '700' },
+  summaryCardValue: { color: colors.text, fontSize: 20, fontWeight: '800' },
+  summaryCardMeta: { color: colors.textMuted, fontSize: 12 },
+  summaryCardMiniValue: { color: colors.text, fontSize: 26, fontWeight: '800' },
+  summaryCardMiniLabel: { color: colors.textMuted, fontSize: 11, fontWeight: '700' },
   filtersRow: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    gap: 10,
+    gap: 8,
   },
   filterPill: {
     paddingHorizontal: 14,
-    paddingVertical: 10,
+    paddingVertical: 8,
     borderRadius: 999,
     backgroundColor: 'rgba(255,255,255,0.06)',
     borderWidth: 1,
     borderColor: colors.border,
   },
-  filterPillActive: {
-    backgroundColor: colors.accent,
-  },
-  filterText: {
-    color: colors.textMuted,
-    fontWeight: '700',
-    fontSize: 12,
-  },
+  filterPillActive: { backgroundColor: colors.accent },
+  filterText: { color: colors.textMuted, fontWeight: '700', fontSize: 12 },
   filterTextActive: { color: colors.white },
+  section: { gap: 10 },
+  list: { gap: 12 },
   quickCard: { marginTop: -4 },
   quickCardInner: {
     paddingHorizontal: 18,
-    paddingVertical: 18,
+    paddingVertical: 16,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
   },
-  quickTitle: { color: colors.text, fontSize: 18, fontWeight: '700' },
-  quickSubtitle: {
-    marginTop: 6,
-    color: colors.textMuted,
-    fontSize: 13,
-    maxWidth: 220,
-    lineHeight: 18,
-  },
+  quickTitle: { color: colors.text, fontSize: 16, fontWeight: '700' },
+  quickSubtitle: { marginTop: 4, color: colors.textMuted, fontSize: 12, lineHeight: 18 },
   addButton: {
-    width: 48,
-    height: 48,
-    borderRadius: 24,
+    width: 46,
+    height: 46,
+    borderRadius: 23,
     alignItems: 'center',
     justifyContent: 'center',
     backgroundColor: colors.accent,
   },
-  section: { gap: 10 },
-  list: { gap: 12 },
   emptyText: {
     color: colors.textMuted,
     fontSize: 14,
     lineHeight: 22,
-    paddingVertical: 16,
+    paddingVertical: 14,
     paddingHorizontal: 4,
   },
 });

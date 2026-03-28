@@ -311,7 +311,7 @@ export default function App() {
               <Text style={[styles.tabLabel, activeTab === 'home' && styles.tabLabelActive]}>主页</Text>
             </Pressable>
             <Pressable style={[styles.tab, activeTab === 'stats' && styles.tabActive]} onPress={() => setActiveTab('stats')}>
-              <Ionicons name="bar-chart" size={18} color={activeTab === 'stats' ? colors.white : colors.textMuted} />
+              <Ionicons name="bar-chart" size={16} color={activeTab === 'stats' ? colors.white : colors.textMuted} />
               <Text style={[styles.tabLabel, activeTab === 'stats' && styles.tabLabelActive]}>统计</Text>
             </Pressable>
           </View>
@@ -488,31 +488,32 @@ const styles = StyleSheet.create({
     borderColor: colors.border,
   },
   body: { flex: 1 },
-  bodyContent: { paddingBottom: 164 },
+  bodyContent: { paddingBottom: 204 },
   loadingState: { flex: 1, alignItems: 'center', justifyContent: 'center' },
   loadingText: { color: colors.textMuted, fontSize: 15 },
   tabBar: {
     position: 'absolute',
     left: 20,
     right: 20,
-    bottom: 10,
+    bottom: 6,
     backgroundColor: 'rgba(9, 14, 28, 0.96)',
-    borderRadius: 16,
-    padding: 5,
+    borderRadius: 14,
+    paddingHorizontal: 4,
+    paddingVertical: 4,
     flexDirection: 'row',
-    gap: 8,
+    gap: 6,
     borderWidth: 1,
     borderColor: colors.border,
   },
   tab: {
     flex: 1,
-    borderRadius: 15,
-    minHeight: 44,
-    paddingVertical: 10,
+    borderRadius: 12,
+    minHeight: 40,
+    paddingVertical: 8,
     alignItems: 'center',
     justifyContent: 'center',
     flexDirection: 'row',
-    gap: 8,
+    gap: 6,
   },
   tabActive: { backgroundColor: colors.accent },
   tabLabel: { color: colors.textMuted, fontWeight: '600' },
