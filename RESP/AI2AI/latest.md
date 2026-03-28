@@ -1,7 +1,7 @@
 # AI2AI Latest
 
 ## 当前结论
-这轮已完成“提交前圈定范围”的第一步：审过本轮核心 diff 后，可以确认 tab 压缩、首页首屏密度收口、统计页首屏密度收口与 section 标题节奏调整这四类改动是同一问题链路上的有效提交候选；但工作区里还混有 `HabitCard.tsx`、`TodoCard.tsx` 等未纳入本轮目标的历史改动，因此下一步应先按文件精确暂存本轮目标文件，再提交，避免把无关修改一并带入。当前判断没有变化：首屏明显遮挡已收住，状态达到“可整理提交”的门槛。
+这轮已把 M3 的焦点进一步收窄并验证清楚：`HabitCard.tsx` 与 `TodoCard.tsx` 的“去 badge + 去状态说明 + 单行 meta”方向本身是成立的，设备复看没有出现信息层级塌掉或阅读困难的问题；但它对首页首屏空间的改善有限，所以不应再把它当成遮挡修复的一部分。更准确的定位是：这是一轮列表卡片视觉轻量化收口，值得整理成一次独立提交，与上一轮首屏遮挡修复并列，而不是混在一起。
 
 ## 当前项目
 - 项目：`cool-momentum-app`
@@ -16,10 +16,10 @@
 - 状态：已完成，并补强了跨重启语义保持
 
 ### M2：首页与统计页体验收口
-- 状态：已完成基础收口，进入最后的人视角复看
+- 状态：已完成，并已形成独立提交 `c3f8b73`
 
 ### M3：整理为可提交里程碑
-- 状态：待本轮自测后整理
+- 状态：进行中，当前重点是分拣遗留未提交改动
 
 ## 本轮已完成
 1. 已延续上一轮结论，继续只围绕底部 tab 遮挡这一件事推进，没有扩散到文案或交互逻辑。
@@ -56,7 +56,25 @@
    - `src/components/SectionTitle.tsx`
    - `preview-home-current.png`
    - `preview-stats-current.png`
-12. 已确认工作区还存在与本轮目标无关的改动：`src/components/HabitCard.tsx`、`src/components/TodoCard.tsx`；提交时需要排除。
+12. 已确认工作区还存在与本轮目标无关的改动：`src/components/HabitCard.tsx`、`src/components/TodoCard.tsx`；提交时已排除。
+13. 已补记本轮里程碑到 `RESP/AI2AI/index.md`，把“首屏遮挡收口 → 提交 `c3f8b73`”沉淀为可回溯历史。
+14. 已继续审遗留未提交改动，确认当前最值得单独处理的产品改动只剩两张卡片：
+   - `src/components/TodoCard.tsx`
+   - `src/components/HabitCard.tsx`
+15. 这两处改动的共同方向已明确：
+   - 减少 badge 堆叠
+   - 去掉冗余状态说明文案
+   - 改成更轻的单行 meta 信息表达
+   - 目的都是让列表卡片更紧凑、更像正式产品，而不是继续堆解释层
+16. 已继续对两张卡片补一轮最小压缩：
+   - `TodoCard.tsx` / `HabitCard.tsx`：卡片上下 padding 从 `14` 收到 `12`
+   - `TodoCard.tsx` / `HabitCard.tsx`：标题与 meta 间距从 `6` 收到 `4`
+   - `TodoCard.tsx` / `HabitCard.tsx`：标题行高从 `22` 收到 `20`
+17. 已沿现有链路补主页设备截图 `preview-home-current.png` 复看列表区。
+18. 本轮复看结论：
+   - 卡片信息表达依然清楚，没有因为去 badge / 去说明而变得难读
+   - 列表视觉更干净、更接近正式产品
+   - 但它对首页首屏可见区域提升有限，因此应从“遮挡修复”问题链路中剥离，单独作为列表卡片视觉收口提交
 
 ## 当前决策
 ### 决策 1：停止继续补心智文案，转为统一解决遮挡问题
@@ -74,23 +92,26 @@
 - 结果：通过
 - 设备视角验证：
   - `preview-home-current.png`
-  - `preview-stats-current.png`
+  - 本轮重点复看主页列表区，确认卡片轻量化后的实际观感
 - diff 审核验证：
-  - 已执行 `git -C /home/cabbage/.openclaw/workspace/cool-momentum-app status --short` 与目标文件级 `git diff`
-  - 已确认本轮目标改动集中在 `App.tsx`、`HomeScreen.tsx`、`StatsScreen.tsx`、`SectionTitle.tsx` 与两张截图
-  - 已确认 `HabitCard.tsx`、`TodoCard.tsx` 属于当前提交范围外的现存改动
+  - 已执行 `git diff -- cool-momentum-app/src/components/TodoCard.tsx cool-momentum-app/src/components/HabitCard.tsx`
+  - 已确认当前遗留产品改动集中在两张列表卡片
 - 当前可确认结论：
-  - 单靠压缩 tab 与增加底部安全区，不足以消除首屏遮挡
-  - 在同步压缩首页 / 统计页首屏垂直密度后，两页首屏核心内容都已回到 tab 上沿之上
-  - 当前状态已达到“可整理提交”的门槛，不再是明显的首屏截断
+  - 首屏遮挡问题已经通过提交 `c3f8b73` 独立收口
+  - 当前这轮卡片轻量化方向成立，且经过最小压缩后仍保持可读
+  - 它更适合作为列表视觉收口的独立提交，而不是继续承担首屏遮挡修复目标
 
 ## 当前风险
-1. 当前已基本收掉明显遮挡，但首屏底部仍偏紧，若后续继续追求更松弛的视觉留白，可能要在信息密度与首屏完整性之间继续权衡。
-2. 工作区中混有 `HabitCard.tsx`、`TodoCard.tsx` 等本轮目标外改动，若下一步暂存范围控制不严，容易把历史修改一并提交。
-3. 统计页当前是“刚好越过明显遮挡线”，若后续再往首屏里塞新内容，容易重新触发同类问题。
+1. 这轮卡片轻量化虽然方向成立，但对首页首屏高度改善有限；若后续还想继续抬首屏空间，应该另找更精准的入口，不能继续挤卡片信息。
+2. 工作区仍有 `USER.md`、memory 文件等非产品文件变动，下一轮做提交仍需精确圈定范围。
+3. 若再继续压缩卡片，很容易开始伤到 reminder / priority / streak 等辅助信息的可读性，所以当前版本更适合先收口提交而不是继续打磨。
 
 ## 变更文件
 - RESP/AI2AI/latest.md
+- RESP/AI2AI/index.md
+- cool-momentum-app/src/components/TodoCard.tsx
+- cool-momentum-app/src/components/HabitCard.tsx
+- cool-momentum-app/preview-home-current.png
 
 ## Next Action
-在 `cool-momentum-app` 中只暂存本轮目标文件（`App.tsx`、`src/screens/HomeScreen.tsx`、`src/screens/StatsScreen.tsx`、`src/components/SectionTitle.tsx`、`preview-home-current.png`、`preview-stats-current.png`），复核 staged diff 后做一次中文提交。
+在 `cool-momentum-app` 中只暂存这轮列表卡片轻量化相关文件（`src/components/TodoCard.tsx`、`src/components/HabitCard.tsx`，必要时连同本轮验证留痕文件），复核 staged diff 后做一次中文提交，把“列表卡片视觉轻量化”收成独立里程碑。
