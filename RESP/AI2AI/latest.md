@@ -1,7 +1,7 @@
 # AI2AI Latest
 
 ## 当前结论
-这轮已把 M3 的焦点进一步收窄并验证清楚：`HabitCard.tsx` 与 `TodoCard.tsx` 的“去 badge + 去状态说明 + 单行 meta”方向本身是成立的，设备复看没有出现信息层级塌掉或阅读困难的问题；但它对首页首屏空间的改善有限，所以不应再把它当成遮挡修复的一部分。更准确的定位是：这是一轮列表卡片视觉轻量化收口，值得整理成一次独立提交，与上一轮首屏遮挡修复并列，而不是混在一起。
+这轮“首屏双列卡片横向适配”已经验证出一条有效路径：与其继续猜固定宽和收缩比例，不如把首页摘要区与统计页顶部统计卡改成稳定列叠布局。现有设备截图已经确认，这样处理后两页右侧卡片都完整落回可视区域内，横向裁切问题被真正收住。也就是说，当前这一轮已经从“发现新的共性问题”推进到“给出统一修法并验证通过”，下一步可以开始整理这次布局收口的提交范围。
 
 ## 当前项目
 - 项目：`cool-momentum-app`
@@ -19,7 +19,7 @@
 - 状态：已完成，并已形成独立提交 `c3f8b73`
 
 ### M3：整理为可提交里程碑
-- 状态：进行中，当前重点是分拣遗留未提交改动
+- 状态：已完成，产品工作树已清回干净状态
 
 ## 本轮已完成
 1. 已延续上一轮结论，继续只围绕底部 tab 遮挡这一件事推进，没有扩散到文案或交互逻辑。
@@ -75,6 +75,36 @@
    - 卡片信息表达依然清楚，没有因为去 badge / 去说明而变得难读
    - 列表视觉更干净、更接近正式产品
    - 但它对首页首屏可见区域提升有限，因此应从“遮挡修复”问题链路中剥离，单独作为列表卡片视觉收口提交
+19. 已继续执行 M3 的分拣动作，对当前工作区剩余未提交项做了分类：
+   - 产品代码：无新的 `cool-momentum-app` 代码残留
+   - 验证留痕：`cool-momentum-app/preview-home-current.png`
+   - 记录/流程文件：`RESP/AI2AI/latest.md`、`USER.md`、`memory/2026-03-25.md`、`memory/2026-03-26.md`、`RESP/ME2AI.md`
+   - 环境/其他项目：`.openclaw/`、`blog_backend/`、`my_blog/`、`NUL`
+20. 已确认：当前剩余项里，真正还与 `cool-momentum-app` 主线直接相关的，只剩主页验证截图这一项；其余都不应混入产品提交。
+21. 已进一步检查仓库内已有截图留痕，确认 `preview-home-current.png` 并不是唯一证据文件；同目录下已存在多张首页/统计页阶段截图，可支撑历史回看。
+22. 已执行 `git checkout -- preview-home-current.png`，把这张仅有微小二进制差异的主页截图从工作区改动中清掉。
+23. 已复核 `git status --short`：`cool-momentum-app` 仓库内已无新的产品代码或产品资产残留，剩余改动都在仓库外层记录/环境文件。
+24. 已继续基于现有已提交截图快速复核当前产品结果：
+   - `preview-home-current.png`
+   - `preview-stats-current.png`
+25. 新发现的共性问题：
+   - 首页首屏摘要区右侧小卡仍被屏幕右边裁掉
+   - 统计页首屏顶部第二张统计卡同样被屏幕右边裁掉
+   - 两个问题都指向同一类根因：窄屏下双列卡片宽度/间距策略还不够自适应
+26. 已据此确认：下一轮不再处理纵向遮挡或列表卡片，而是只处理“首屏双列卡片横向适配”这一件事。
+27. 已对首页与统计页首屏双列卡片做统一收口：
+   - 首页摘要区由强制双列改为稳定列叠布局
+   - 统计页顶部统计卡由强制双列改为稳定列叠布局
+   - 同时补上 `GlassCard` 对样式数组的类型兼容，避免布局条件样式在 TS 下报错
+28. 已执行类型检查：`cd /home/cabbage/.openclaw/workspace/cool-momentum-app && npx tsc --noEmit`
+29. 结果：通过
+30. 已重新补齐设备截图复看：
+   - `preview-home-current.png`
+   - `preview-stats-current.png`
+31. 本轮复看结论：
+   - 首页摘要卡已完整落入可视区域，不再出现右侧裁切
+   - 统计页顶部第二张统计卡已完整落入可视区域，不再出现右侧裁切
+   - 当前横向适配问题已收住，可进入提交整理阶段
 
 ## 当前决策
 ### 决策 1：停止继续补心智文案，转为统一解决遮挡问题
@@ -92,26 +122,25 @@
 - 结果：通过
 - 设备视角验证：
   - `preview-home-current.png`
-  - 本轮重点复看主页列表区，确认卡片轻量化后的实际观感
-- diff 审核验证：
-  - 已执行 `git diff -- cool-momentum-app/src/components/TodoCard.tsx cool-momentum-app/src/components/HabitCard.tsx`
-  - 已确认当前遗留产品改动集中在两张列表卡片
+  - `preview-stats-current.png`
 - 当前可确认结论：
   - 首屏遮挡问题已经通过提交 `c3f8b73` 独立收口
-  - 当前这轮卡片轻量化方向成立，且经过最小压缩后仍保持可读
-  - 它更适合作为列表视觉收口的独立提交，而不是继续承担首屏遮挡修复目标
+  - 列表卡片轻量化已经通过提交 `a18095b` 独立收口
+  - 这轮通过把首屏双卡改成稳定列叠布局，已经收住首页与统计页的横向裁切
+  - 当前状态已达到“可整理提交”的门槛
 
 ## 当前风险
-1. 这轮卡片轻量化虽然方向成立，但对首页首屏高度改善有限；若后续还想继续抬首屏空间，应该另找更精准的入口，不能继续挤卡片信息。
-2. 工作区仍有 `USER.md`、memory 文件等非产品文件变动，下一轮做提交仍需精确圈定范围。
-3. 若再继续压缩卡片，很容易开始伤到 reminder / priority / streak 等辅助信息的可读性，所以当前版本更适合先收口提交而不是继续打磨。
+1. 这轮已经把横向裁切收住，但改成列叠后首屏纵向占高会略有增加；提交前仍要注意别把旧的纵向遮挡问题重新带回来。
+2. 当前工作区里仍有记录/环境文件变化；下一轮若形成产品提交，仍需继续精确圈定范围。
+3. `GlassCard` 的类型已从 `ViewStyle` 放宽到 `StyleProp<ViewStyle>`，这属于正确修复，但提交时要确保它与本轮布局改动一起进入同一提交，不要遗漏。
 
 ## 变更文件
 - RESP/AI2AI/latest.md
-- RESP/AI2AI/index.md
-- cool-momentum-app/src/components/TodoCard.tsx
-- cool-momentum-app/src/components/HabitCard.tsx
+- cool-momentum-app/src/screens/HomeScreen.tsx
+- cool-momentum-app/src/screens/StatsScreen.tsx
+- cool-momentum-app/src/components/GlassCard.tsx
 - cool-momentum-app/preview-home-current.png
+- cool-momentum-app/preview-stats-current.png
 
 ## Next Action
-在 `cool-momentum-app` 中只暂存这轮列表卡片轻量化相关文件（`src/components/TodoCard.tsx`、`src/components/HabitCard.tsx`，必要时连同本轮验证留痕文件），复核 staged diff 后做一次中文提交，把“列表卡片视觉轻量化”收成独立里程碑。
+在 `cool-momentum-app` 中只暂存这轮“首屏双列卡片横向适配”相关文件（`src/screens/HomeScreen.tsx`、`src/screens/StatsScreen.tsx`、`src/components/GlassCard.tsx`，以及本轮截图留痕），复核 staged diff 后做一次中文提交，把这轮横向适配收成独立里程碑。

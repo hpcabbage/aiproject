@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { Pressable, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
 import { GlassCard } from '../components/GlassCard';
 import { SectionTitle } from '../components/SectionTitle';
 import { colors } from '../theme/colors';
@@ -71,14 +71,14 @@ export const StatsScreen = ({ habits, todos, completionRate, bestStreak, totalDo
     <View style={styles.wrapper}>
       <SectionTitle title="统计" subtitle="看结果，不看解释。" />
 
-      <View style={styles.heroRow}>
-        <GlassCard style={styles.heroCardPrimary}>
+      <View style={[styles.heroRow, styles.heroRowCompact]}>
+        <GlassCard style={[styles.heroCardPrimary, styles.heroCardPrimaryCompact]}>
           <View style={styles.heroCardInnerPrimary}>
             <Text style={styles.heroCardValue}>{Math.round(completionRate)}%</Text>
             <Text style={styles.heroCardLabel}>今日完成率</Text>
           </View>
         </GlassCard>
-        <GlassCard style={styles.heroCardSecondary}>
+        <GlassCard style={[styles.heroCardSecondary, styles.heroCardSecondaryCompact]}>
           <View style={styles.heroCardInnerSecondary}>
             <Text style={styles.heroCardMiniValue}>{totalDone}</Text>
             <Text style={styles.heroCardMiniLabel}>总完成</Text>
@@ -236,14 +236,17 @@ export const StatsScreen = ({ habits, todos, completionRate, bestStreak, totalDo
 
 const styles = StyleSheet.create({
   wrapper: { gap: 14 },
-  heroRow: { flexDirection: 'row', gap: 10 },
-  heroCardPrimary: { flex: 1 },
-  heroCardSecondary: { width: 108 },
+  heroRow: { flexDirection: 'row', gap: 10, alignItems: 'stretch' },
+  heroRowCompact: { flexDirection: 'column' },
+  heroCardPrimary: { flex: 1, minWidth: 0 },
+  heroCardPrimaryCompact: { width: '100%' },
+  heroCardSecondary: { flexBasis: 100, flexGrow: 0, flexShrink: 1, minWidth: 90, maxWidth: 108 },
+  heroCardSecondaryCompact: { width: '100%', maxWidth: '100%' },
   heroCardInnerPrimary: { padding: 16, minHeight: 112, justifyContent: 'center', gap: 4 },
-  heroCardInnerSecondary: { padding: 16, minHeight: 112, justifyContent: 'center', alignItems: 'center', gap: 4 },
+  heroCardInnerSecondary: { paddingHorizontal: 12, paddingVertical: 16, minHeight: 112, justifyContent: 'center', alignItems: 'center', gap: 4 },
   heroCardValue: { color: colors.text, fontSize: 34, fontWeight: '800' },
   heroCardLabel: { color: colors.textMuted, fontSize: 12, fontWeight: '700' },
-  heroCardMiniValue: { color: colors.text, fontSize: 30, fontWeight: '800' },
+  heroCardMiniValue: { color: colors.text, fontSize: 28, fontWeight: '800' },
   heroCardMiniLabel: { color: colors.textMuted, fontSize: 12, fontWeight: '700' },
   trendInner: { padding: 16, gap: 12 },
   trendHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', gap: 12 },

@@ -1,4 +1,4 @@
-import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { ScrollView, StyleSheet, Text, TouchableOpacity, View, useWindowDimensions } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import { GlassCard } from '../components/GlassCard';
@@ -45,6 +45,8 @@ export const HomeScreen = ({
   onToggleHabit,
   onEditHabit,
 }: Props) => {
+  const { width } = useWindowDimensions();
+  const isCompactWidth = width < 440;
   const today = getTodayKey();
   const pendingTodos = todos.filter((item) => !item.done).length;
   const doneTodos = todos.filter((item) => item.done).length;
@@ -132,15 +134,15 @@ export const HomeScreen = ({
         </GlassCard>
       ) : null}
 
-      <View style={styles.summaryRow}>
-        <GlassCard style={styles.summaryCardPrimary}>
+      <View style={[styles.summaryRow, styles.summaryRowCompact]}>
+        <GlassCard style={[styles.summaryCardPrimary, styles.summaryCardPrimaryCompact]}>
           <View style={styles.summaryCardInnerPrimary}>
             <Text style={styles.summaryCardEyebrow}>当前节奏</Text>
             <Text style={styles.summaryCardValue}>{topCategory}</Text>
             <Text style={styles.summaryCardMeta}>已完成 {doneTodos} 项</Text>
           </View>
         </GlassCard>
-        <GlassCard style={styles.summaryCardSecondary}>
+        <GlassCard style={isCompactWidth ? [styles.summaryCardSecondary, styles.summaryCardSecondaryCompact] : styles.summaryCardSecondary}>
           <View style={styles.summaryCardInnerSecondary}>
             <Text style={styles.summaryCardMiniValue}>{reminderCount}</Text>
             <Text style={styles.summaryCardMiniLabel}>提醒中</Text>
@@ -298,15 +300,18 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(255,184,92,0.14)',
   },
   inlineReminderText: { color: colors.warning, fontSize: 11, fontWeight: '700' },
-  summaryRow: { flexDirection: 'row', gap: 10 },
-  summaryCardPrimary: { flex: 1 },
-  summaryCardSecondary: { width: 104 },
+  summaryRow: { flexDirection: 'row', gap: 10, alignItems: 'stretch' },
+  summaryRowCompact: { flexDirection: 'column' },
+  summaryCardPrimary: { flex: 1, minWidth: 0 },
+  summaryCardPrimaryCompact: { width: '100%' },
+  summaryCardSecondary: { flexBasis: 96, flexGrow: 0, flexShrink: 1, minWidth: 88, maxWidth: 104 },
+  summaryCardSecondaryCompact: { width: '100%', maxWidth: '100%' },
   summaryCardInnerPrimary: { padding: 16, gap: 4 },
-  summaryCardInnerSecondary: { padding: 16, gap: 4, alignItems: 'center', justifyContent: 'center', minHeight: 92 },
+  summaryCardInnerSecondary: { paddingHorizontal: 12, paddingVertical: 16, gap: 4, alignItems: 'center', justifyContent: 'center', minHeight: 92 },
   summaryCardEyebrow: { color: colors.textMuted, fontSize: 11, fontWeight: '700' },
   summaryCardValue: { color: colors.text, fontSize: 20, fontWeight: '800' },
   summaryCardMeta: { color: colors.textMuted, fontSize: 12 },
-  summaryCardMiniValue: { color: colors.text, fontSize: 26, fontWeight: '800' },
+  summaryCardMiniValue: { color: colors.text, fontSize: 24, fontWeight: '800' },
   summaryCardMiniLabel: { color: colors.textMuted, fontSize: 11, fontWeight: '700' },
   filtersRow: {
     flexDirection: 'row',
