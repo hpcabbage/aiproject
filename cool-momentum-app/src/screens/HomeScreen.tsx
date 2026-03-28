@@ -309,9 +309,9 @@ const styles = StyleSheet.create({
   summaryCardInnerPrimary: { padding: 16, gap: 4 },
   summaryCardInnerSecondary: { paddingHorizontal: 12, paddingVertical: 16, gap: 4, alignItems: 'center', justifyContent: 'center', minHeight: 92 },
   summaryCardEyebrow: { color: colors.textMuted, fontSize: 11, fontWeight: '700' },
-  summaryCardValue: { color: colors.text, fontSize: 20, fontWeight: '800' },
-  summaryCardMeta: { color: colors.textMuted, fontSize: 12 },
-  summaryCardMiniValue: { color: colors.text, fontSize: 24, fontWeight: '800' },
+  summaryCardValue: { color: colors.text, fontSize: 18, fontWeight: '800' },
+  summaryCardMeta: { color: colors.textMuted, fontSize: 11 },
+  summaryCardMiniValue: { color: colors.text, fontSize: 22, fontWeight: '800' },
   summaryCardMiniLabel: { color: colors.textMuted, fontSize: 11, fontWeight: '700' },
   filtersRow: {
     flexDirection: 'row',

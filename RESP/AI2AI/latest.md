@@ -1,7 +1,7 @@
 # AI2AI Latest
 
 ## 当前结论
-这轮“首屏双列卡片横向适配”已经验证出一条有效路径：与其继续猜固定宽和收缩比例，不如把首页摘要区与统计页顶部统计卡改成稳定列叠布局。现有设备截图已经确认，这样处理后两页右侧卡片都完整落回可视区域内，横向裁切问题被真正收住。也就是说，当前这一轮已经从“发现新的共性问题”推进到“给出统一修法并验证通过”，下一步可以开始整理这次布局收口的提交范围。
+这轮先没有急着直接提交，而是把“窄屏首屏布局继续收口”这组改动的实际 diff 范围重新压实复核了一遍。结果确认：当前产品改动确实很收敛，代码层只落在 `HomeScreen.tsx` 与 `StatsScreen.tsx` 的首屏卡片字号 / padding / 最小高度微调上，截图留痕也只新增了主页这一张变化，统计页截图目前没有新的二进制差异。也就是说，这轮提交现在已经具备“范围明确、语义单一”的条件，下一步可以直接按这个边界去暂存并提交。
 
 ## 当前项目
 - 项目：`cool-momentum-app`
@@ -105,6 +105,28 @@
    - 首页摘要卡已完整落入可视区域，不再出现右侧裁切
    - 统计页顶部第二张统计卡已完整落入可视区域，不再出现右侧裁切
    - 当前横向适配问题已收住，可进入提交整理阶段
+32. 已继续沿“窄屏优先”方向补一轮更轻的首屏布局：
+   - `HomeScreen.tsx`：进一步压缩摘要区两张列叠卡的 padding / 字号 / 最小高度
+   - `StatsScreen.tsx`：进一步压缩顶部统计卡的 padding / 字号 / 最小高度
+33. 已执行类型检查：`cd /home/cabbage/.openclaw/workspace/cool-momentum-app && npx tsc --noEmit`
+34. 结果：通过
+35. 已重新补齐设备截图复看：
+   - `preview-home-current.png`（主页）
+   - `preview-stats-current.png`（统计页）
+36. 本轮复看结论：
+   - 首页首屏摘要区在保持横向完整的前提下，纵向占高比上一版更可控
+   - 统计页顶部卡区在保持横向完整的前提下，纵向压迫感也有所下降
+   - 当前“窄屏首屏布局”方向已从可用走到更稳，具备独立整理提交的价值
+37. 已执行提交前范围复核：
+   - `git status --short`
+   - `git diff --stat -- src/screens/HomeScreen.tsx src/screens/StatsScreen.tsx preview-home-current.png preview-stats-current.png`
+   - `git diff -- src/screens/HomeScreen.tsx`
+   - `git diff -- src/screens/StatsScreen.tsx`
+38. 复核结果确认：
+   - `HomeScreen.tsx` 只剩摘要卡数字字号与 meta 字号微调
+   - `StatsScreen.tsx` 只剩顶部统计卡 padding / 最小高度 / 数字字号微调
+   - `preview-home-current.png` 有新的截图差异
+   - `preview-stats-current.png` 当前没有新的未提交差异，因此这轮不必强行带上
 
 ## 当前决策
 ### 决策 1：停止继续补心智文案，转为统一解决遮挡问题
@@ -120,27 +142,28 @@
 ## 当前验证
 - 类型验证：`cd /home/cabbage/.openclaw/workspace/cool-momentum-app && npx tsc --noEmit`
 - 结果：通过
-- 设备视角验证：
-  - `preview-home-current.png`
-  - `preview-stats-current.png`
+- 提交前范围验证：
+  - 已执行 `git -C /home/cabbage/.openclaw/workspace/cool-momentum-app status --short`
+  - 已执行 `git -C /home/cabbage/.openclaw/workspace/cool-momentum-app diff --stat -- src/screens/HomeScreen.tsx src/screens/StatsScreen.tsx preview-home-current.png preview-stats-current.png`
+  - 已执行 `git -C /home/cabbage/.openclaw/workspace/cool-momentum-app diff -- src/screens/HomeScreen.tsx`
+  - 已执行 `git -C /home/cabbage/.openclaw/workspace/cool-momentum-app diff -- src/screens/StatsScreen.tsx`
 - 当前可确认结论：
   - 首屏遮挡问题已经通过提交 `c3f8b73` 独立收口
   - 列表卡片轻量化已经通过提交 `a18095b` 独立收口
-  - 这轮通过把首屏双卡改成稳定列叠布局，已经收住首页与统计页的横向裁切
-  - 当前状态已达到“可整理提交”的门槛
+  - 首屏双卡横向裁切已经通过提交 `0531707` 独立收口
+  - 这轮继续压薄窄屏首屏卡区后，横向完整性保持住了，纵向首屏压力也进一步下降
+  - 当前待提交范围已明确收敛到 `HomeScreen.tsx`、`StatsScreen.tsx` 与 `preview-home-current.png`
 
 ## 当前风险
-1. 这轮已经把横向裁切收住，但改成列叠后首屏纵向占高会略有增加；提交前仍要注意别把旧的纵向遮挡问题重新带回来。
-2. 当前工作区里仍有记录/环境文件变化；下一轮若形成产品提交，仍需继续精确圈定范围。
-3. `GlassCard` 的类型已从 `ViewStyle` 放宽到 `StyleProp<ViewStyle>`，这属于正确修复，但提交时要确保它与本轮布局改动一起进入同一提交，不要遗漏。
+1. 这轮虽然已经把窄屏首屏布局压得更轻，但继续再压下去就可能开始伤到摘要信息的辨识度，尤其是首页节奏卡与统计页顶部数字卡。
+2. 当前工作区里仍有记录/环境文件变化；提交时仍需继续精确圈定范围，避免把仓库外层文件误带进去。
+3. 统计页截图当前没有新的未提交差异；若提交信息里仍写成“双截图留痕”，会和实际提交范围不一致。
 
 ## 变更文件
 - RESP/AI2AI/latest.md
 - cool-momentum-app/src/screens/HomeScreen.tsx
 - cool-momentum-app/src/screens/StatsScreen.tsx
-- cool-momentum-app/src/components/GlassCard.tsx
 - cool-momentum-app/preview-home-current.png
-- cool-momentum-app/preview-stats-current.png
 
 ## Next Action
-在 `cool-momentum-app` 中只暂存这轮“首屏双列卡片横向适配”相关文件（`src/screens/HomeScreen.tsx`、`src/screens/StatsScreen.tsx`、`src/components/GlassCard.tsx`，以及本轮截图留痕），复核 staged diff 后做一次中文提交，把这轮横向适配收成独立里程碑。
+在 `cool-momentum-app` 中只暂存这轮已确认有真实差异的文件（`src/screens/HomeScreen.tsx`、`src/screens/StatsScreen.tsx`、`preview-home-current.png`），复核 staged diff 后做一次中文提交，把这轮窄屏首屏布局 refinement 收成独立里程碑。
