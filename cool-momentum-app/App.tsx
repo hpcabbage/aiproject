@@ -13,6 +13,7 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
+import * as Device from 'expo-device';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import { HomeScreen } from './src/screens/HomeScreen';
@@ -25,10 +26,12 @@ import { getTodayKey } from './src/utils/date';
 import {
   cancelReminder,
   configureNotifications,
+  getReminderNextTriggerHint,
   isReminderTimeValid,
   normalizeReminderTimeInput,
   requestNotificationPermission,
   scheduleDailyReminder,
+  scheduleReminderTestNotification,
 } from './src/utils/notifications';
 
 export default function App() {
@@ -59,6 +62,8 @@ export default function App() {
   const [reminderEnabled, setReminderEnabled] = useState(false);
   const [reminderTime, setReminderTime] = useState('09:00');
   const [confirmingDelete, setConfirmingDelete] = useState(false);
+  const [testReminderStatus, setTestReminderStatus] = useState<string | null>(null);
+  const [testReminderPending, setTestReminderPending] = useState(false);
 
   const placeholder = useMemo(
     () => (draftMode === 'todo' ? '比如：把产品首页原型做完' : '比如：晨间复盘 10 分钟'),
@@ -70,6 +75,21 @@ export default function App() {
   const topTodos = useMemo(() => filteredTodos.filter((item) => !item.done).slice(0, 3), [filteredTodos]);
   const editingTodo = useMemo(() => state.todos.find((item) => item.id === editingTodoId) ?? null, [editingTodoId, state.todos]);
   const editingHabit = useMemo(() => state.habits.find((item) => item.id === editingHabitId) ?? null, [editingHabitId, state.habits]);
+  const reminderHint = useMemo(() => {
+    if (!reminderEnabled) {
+      return '这是按天重复的提醒，不是倒计时；保存后会按设置时间每天提醒你。';
+    }
+
+    if (Platform.OS === 'web') {
+      return '网页端不适合验证这个提醒链路，最好用手机上的最新安装包测试。';
+    }
+
+    if (!Device.isDevice) {
+      return '当前更像预览/模拟环境，提醒在这里可能看起来像没生效，真机测试最可靠。';
+    }
+
+    return getReminderNextTriggerHint(reminderTime);
+  }, [reminderEnabled, reminderTime]);
 
   useEffect(() => {
     configureNotifications();
@@ -94,6 +114,8 @@ export default function App() {
     setReminderEnabled(false);
     setReminderTime('09:00');
     setConfirmingDelete(false);
+    setTestReminderStatus(null);
+    setTestReminderPending(false);
   };
 
   const openCreateModal = () => {
@@ -178,6 +200,41 @@ export default function App() {
 
     resetComposer();
     setModalVisible(false);
+  };
+
+  const handleTestReminder = async () => {
+    setTestReminderStatus(null);
+
+    if (Platform.OS === 'web') {
+      setTestReminderStatus('网页端不能可靠验证提醒，建议直接用手机上的最新安装包测试。');
+      return;
+    }
+
+    if (!Device.isDevice) {
+      setTestReminderStatus('当前更像预览/模拟环境，测试提醒结果不可靠，最好换真机验证。');
+      return;
+    }
+
+    setTestReminderPending(true);
+
+    try {
+      const granted = await requestNotificationPermission();
+      if (!granted) {
+        setTestReminderStatus('通知权限还没打开，所以这条测试提醒不会真正弹出。');
+        return;
+      }
+
+      await scheduleReminderTestNotification(
+        'Momentum｜测试提醒',
+        draftValue.trim() ? `5 秒后会弹一条测试提醒：${draftValue.trim()}` : '5 秒后会弹一条测试提醒，用来确认提醒链路已经打通。',
+      );
+
+      setTestReminderStatus('测试提醒已经排上了，正常情况下 5 秒内你会收到一条系统通知。');
+    } catch {
+      setTestReminderStatus('这次测试提醒没有顺利排上，说明当前环境或安装包里这条链路还没真正打通。');
+    } finally {
+      setTestReminderPending(false);
+    }
   };
 
   return (
@@ -415,6 +472,18 @@ export default function App() {
                 {reminderEnabled && !isReminderTimeValid(reminderTime) ? (
                   <Text style={styles.reminderError}>时间格式用 24 小时制，比如 09:00 / 21:30</Text>
                 ) : null}
+
+                <Text style={styles.reminderHint}>{reminderHint}</Text>
+
+                <TouchableOpacity
+                  style={[styles.testReminderButton, testReminderPending && styles.testReminderButtonDisabled]}
+                  onPress={handleTestReminder}
+                  disabled={testReminderPending}
+                >
+                  <Text style={styles.testReminderButtonText}>{testReminderPending ? '正在排测试提醒…' : '立即测试提醒（5 秒）'}</Text>
+                </TouchableOpacity>
+
+                {testReminderStatus ? <Text style={styles.testReminderStatus}>{testReminderStatus}</Text> : null}
               </View>
 
               <TouchableOpacity style={styles.submitButton} onPress={handleSubmit}>
@@ -613,6 +682,33 @@ const styles = StyleSheet.create({
   reminderToggleText: { color: colors.textMuted, fontSize: 12, fontWeight: '700' },
   reminderToggleTextActive: { color: colors.success },
   reminderError: { color: colors.warning, fontSize: 12, lineHeight: 18 },
+  reminderHint: {
+    color: colors.textMuted,
+    fontSize: 12,
+    lineHeight: 18,
+  },
+  testReminderButton: {
+    minHeight: 46,
+    borderRadius: 16,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: 'rgba(124, 92, 255, 0.16)',
+    borderWidth: 1,
+    borderColor: 'rgba(124, 92, 255, 0.28)',
+  },
+  testReminderButtonDisabled: {
+    opacity: 0.6,
+  },
+  testReminderButtonText: {
+    color: colors.accentSecondary,
+    fontSize: 14,
+    fontWeight: '800',
+  },
+  testReminderStatus: {
+    color: colors.textMuted,
+    fontSize: 12,
+    lineHeight: 18,
+  },
   submitButton: {
     minHeight: 54,
     borderRadius: 18,

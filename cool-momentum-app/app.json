@@ -25,7 +25,19 @@
       "bundler": "metro"
     },
     "plugins": [
-      "expo-asset"
-    ]
+      "expo-asset",
+      [
+        "expo-notifications",
+        {
+          "color": "#7C5CFF",
+          "defaultChannel": "momentum-reminders"
+        }
+      ]
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "f5b9b031-e13c-4a65-abab-3eb4c66d3ad6"
+      }
+    }
   }
 }

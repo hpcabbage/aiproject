@@ -48,12 +48,13 @@ export const HomeScreen = ({
   const { width } = useWindowDimensions();
   const isCompactWidth = width < 440;
   const today = getTodayKey();
-  const pendingTodos = todos.filter((item) => !item.done).length;
-  const doneTodos = todos.filter((item) => item.done).length;
+  const pendingTodoItems = todos.filter((item) => !item.done);
+  const completedTodoItems = todos.filter((item) => item.done);
+  const pendingTodos = pendingTodoItems.length;
+  const doneTodos = completedTodoItems.length;
   const habitsDoneToday = habits.filter((habit) => habit.completions.includes(today)).length;
-  const reminderCount = [...todos.filter((item) => !item.done), ...habits.filter((habit) => !habit.completions.includes(today))].filter(
-    (item) => item.reminder?.enabled,
-  ).length;
+  const reminderCount = [...pendingTodoItems, ...habits.filter((habit) => !habit.completions.includes(today))].filter((item) => item.reminder?.enabled)
+    .length;
 
   const emptyTodoText =
     selectedCategory === 'All'
@@ -166,15 +167,51 @@ export const HomeScreen = ({
         <SectionTitle title="今日待办" subtitle="今天真正要推进的事。" />
         <View style={styles.list}>
           {todos.length ? (
-            todos.map((item) => (
-              <TodoCard
-                key={item.id}
-                item={item}
-                onToggle={() => onToggleTodo(item.id)}
-                onDelete={() => onDeleteTodo(item.id)}
-                onEdit={() => onEditTodo(item.id)}
-              />
-            ))
+            <>
+              <View style={styles.todoGroup}>
+                <View style={styles.todoGroupHeader}>
+                  <Text style={styles.todoGroupTitle}>未完成</Text>
+                  <View style={styles.todoGroupCountBadge}>
+                    <Text style={styles.todoGroupCountText}>{pendingTodoItems.length}</Text>
+                  </View>
+                </View>
+                {pendingTodoItems.length ? (
+                  pendingTodoItems.map((item) => (
+                    <TodoCard
+                      key={item.id}
+                      item={item}
+                      onToggle={() => onToggleTodo(item.id)}
+                      onDelete={() => onDeleteTodo(item.id)}
+                      onEdit={() => onEditTodo(item.id)}
+                    />
+                  ))
+                ) : (
+                  <Text style={styles.groupHintText}>这组已经清空啦，下面都是今天已经收掉的事。</Text>
+                )}
+              </View>
+
+              {completedTodoItems.length ? (
+                <View style={styles.todoGroupDone}>
+                  <View style={styles.todoGroupHeader}>
+                    <Text style={styles.todoGroupTitleMuted}>已完成</Text>
+                    <View style={[styles.todoGroupCountBadge, styles.todoGroupCountBadgeDone]}>
+                      <Text style={[styles.todoGroupCountText, styles.todoGroupCountTextDone]}>{completedTodoItems.length}</Text>
+                    </View>
+                  </View>
+                  <View style={styles.doneList}>
+                    {completedTodoItems.map((item) => (
+                      <TodoCard
+                        key={item.id}
+                        item={item}
+                        onToggle={() => onToggleTodo(item.id)}
+                        onDelete={() => onDeleteTodo(item.id)}
+                        onEdit={() => onEditTodo(item.id)}
+                      />
+                    ))}
+                  </View>
+                </View>
+              ) : null}
+            </>
           ) : (
             <Text style={styles.emptyText}>{emptyTodoText}</Text>
           )}
@@ -331,6 +368,63 @@ const styles = StyleSheet.create({
   filterTextActive: { color: colors.white },
   section: { gap: 10 },
   list: { gap: 12 },
+  todoGroup: {
+    gap: 12,
+  },
+  todoGroupDone: {
+    gap: 12,
+    paddingTop: 4,
+  },
+  todoGroupHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    gap: 12,
+    paddingHorizontal: 2,
+  },
+  todoGroupTitle: {
+    color: colors.text,
+    fontSize: 14,
+    fontWeight: '800',
+  },
+  todoGroupTitleMuted: {
+    color: colors.textMuted,
+    fontSize: 14,
+    fontWeight: '800',
+  },
+  todoGroupCountBadge: {
+    minWidth: 28,
+    paddingHorizontal: 10,
+    paddingVertical: 5,
+    borderRadius: 999,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: 'rgba(124, 92, 255, 0.14)',
+    borderWidth: 1,
+    borderColor: 'rgba(124, 92, 255, 0.24)',
+  },
+  todoGroupCountBadgeDone: {
+    backgroundColor: 'rgba(49, 208, 170, 0.12)',
+    borderColor: 'rgba(49, 208, 170, 0.24)',
+  },
+  todoGroupCountText: {
+    color: colors.accentSecondary,
+    fontSize: 12,
+    fontWeight: '800',
+  },
+  todoGroupCountTextDone: {
+    color: colors.success,
+  },
+  groupHintText: {
+    color: colors.textMuted,
+    fontSize: 13,
+    lineHeight: 20,
+    paddingHorizontal: 4,
+  },
+  doneList: {
+    gap: 10,
+    opacity: 0.96,
+  },
   quickCard: { marginTop: -4 },
   quickCardInner: {
     paddingHorizontal: 18,

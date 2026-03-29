@@ -14,20 +14,31 @@ export const TodoCard = ({ item, onToggle, onDelete, onEdit }: Props) => {
   const reminderText = item.reminder?.enabled ? item.reminder.time : null;
 
   return (
-    <View style={styles.wrapper}>
-      <Pressable style={styles.check} onPress={onToggle} hitSlop={12}>
+    <View style={[styles.wrapper, item.done && styles.wrapperDone]}>
+      <Pressable style={styles.check} onPress={onToggle} hitSlop={14}>
         <Ionicons
           name={item.done ? 'checkmark-circle' : 'ellipse-outline'}
-          size={24}
+          size={28}
           color={item.done ? colors.success : colors.textMuted}
         />
       </Pressable>
-      <View style={styles.content}>
-        <Text style={[styles.title, item.done && styles.done]}>{item.title}</Text>
+
+      <Pressable style={styles.content} onPress={onToggle} hitSlop={8}>
+        <View style={styles.titleRow}>
+          <Text style={[styles.title, item.done && styles.done]} numberOfLines={2}>
+            {item.title}
+          </Text>
+          <View style={[styles.statusBadge, item.done ? styles.statusBadgeDone : styles.statusBadgePending]}>
+            <Text style={[styles.statusText, item.done ? styles.statusTextDone : styles.statusTextPending]}>
+              {item.done ? '已完成' : '点我完成'}
+            </Text>
+          </View>
+        </View>
+
         <View style={styles.metaRow}>
-          <Text style={styles.metaText}>{categoryLabels[item.category]}</Text>
+          <Text style={[styles.metaText, item.done && styles.metaTextDone]}>{categoryLabels[item.category]}</Text>
           <Text style={styles.metaDot}>·</Text>
-          <Text style={styles.metaText}>{priorityLabels[item.priority]}</Text>
+          <Text style={[styles.metaText, item.done && styles.metaTextDone]}>{priorityLabels[item.priority]}</Text>
           {reminderText ? (
             <>
               <Text style={styles.metaDot}>·</Text>
@@ -35,7 +46,8 @@ export const TodoCard = ({ item, onToggle, onDelete, onEdit }: Props) => {
             </>
           ) : null}
         </View>
-      </View>
+      </Pressable>
+
       <View style={styles.actions}>
         <Pressable onPress={onEdit} hitSlop={12} style={styles.actionButton}>
           <Ionicons name="create-outline" size={20} color={colors.textMuted} />
@@ -60,23 +72,55 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: colors.border,
   },
+  wrapperDone: {
+    backgroundColor: 'rgba(49, 208, 170, 0.08)',
+    borderColor: 'rgba(49, 208, 170, 0.24)',
+  },
   check: {
     alignSelf: 'flex-start',
     paddingTop: 2,
   },
   content: {
     flex: 1,
-    gap: 4,
+    gap: 8,
+  },
+  titleRow: {
+    gap: 8,
   },
   title: {
     color: colors.text,
     fontSize: 16,
     fontWeight: '700',
-    lineHeight: 20,
+    lineHeight: 22,
   },
   done: {
     textDecorationLine: 'line-through',
     color: colors.textMuted,
+  },
+  statusBadge: {
+    alignSelf: 'flex-start',
+    paddingHorizontal: 10,
+    paddingVertical: 6,
+    borderRadius: 999,
+    borderWidth: 1,
+  },
+  statusBadgePending: {
+    backgroundColor: 'rgba(124, 92, 255, 0.12)',
+    borderColor: 'rgba(124, 92, 255, 0.26)',
+  },
+  statusBadgeDone: {
+    backgroundColor: 'rgba(49, 208, 170, 0.12)',
+    borderColor: 'rgba(49, 208, 170, 0.24)',
+  },
+  statusText: {
+    fontSize: 12,
+    fontWeight: '800',
+  },
+  statusTextPending: {
+    color: colors.accentSecondary,
+  },
+  statusTextDone: {
+    color: colors.success,
   },
   metaRow: {
     flexDirection: 'row',
@@ -88,6 +132,9 @@ const styles = StyleSheet.create({
     color: colors.textMuted,
     fontSize: 12,
     fontWeight: '600',
+  },
+  metaTextDone: {
+    color: 'rgba(183, 194, 224, 0.72)',
   },
   metaTextAccent: {
     color: colors.warning,
