@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { ScrollView, StyleSheet, Text, TouchableOpacity, View, useWindowDimensions } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
@@ -48,6 +49,8 @@ export const HomeScreen = ({
   const { width } = useWindowDimensions();
   const isCompactWidth = width < 440;
   const today = getTodayKey();
+  const [todoDoneCollapsed, setTodoDoneCollapsed] = useState(true);
+  const [habitDoneCollapsed, setHabitDoneCollapsed] = useState(true);
   const pendingTodoItems = todos.filter((item) => !item.done);
   const completedTodoItems = todos.filter((item) => item.done);
   const activeHabitItems = habits.filter((habit) => !habit.completions.includes(today));
@@ -226,23 +229,31 @@ export const HomeScreen = ({
 
               {completedTodoItems.length ? (
                 <View style={styles.todoGroupDone}>
-                  <View style={styles.todoGroupHeader}>
-                    <Text style={styles.todoGroupTitleMuted}>已完成</Text>
-                    <View style={[styles.todoGroupCountBadge, styles.todoGroupCountBadgeDone]}>
-                      <Text style={[styles.todoGroupCountText, styles.todoGroupCountTextDone]}>{completedTodoItems.length}</Text>
+                  <TouchableOpacity style={styles.collapsibleHeader} onPress={() => setTodoDoneCollapsed((value) => !value)} activeOpacity={0.86}>
+                    <View style={styles.collapsibleHeaderLeft}>
+                      <Text style={styles.todoGroupTitleMuted}>已完成</Text>
+                      <View style={[styles.todoGroupCountBadge, styles.todoGroupCountBadgeDone]}>
+                        <Text style={[styles.todoGroupCountText, styles.todoGroupCountTextDone]}>{completedTodoItems.length}</Text>
+                      </View>
                     </View>
-                  </View>
-                  <View style={styles.doneList}>
-                    {completedTodoItems.map((item) => (
-                      <TodoCard
-                        key={item.id}
-                        item={item}
-                        onToggle={() => onToggleTodo(item.id)}
-                        onDelete={() => onDeleteTodo(item.id)}
-                        onEdit={() => onEditTodo(item.id)}
-                      />
-                    ))}
-                  </View>
+                    <View style={styles.collapsibleHeaderRight}>
+                      <Text style={styles.collapsibleHint}>{todoDoneCollapsed ? '展开查看' : '收起'}</Text>
+                      <Ionicons name={todoDoneCollapsed ? 'chevron-down' : 'chevron-up'} size={16} color={colors.textMuted} />
+                    </View>
+                  </TouchableOpacity>
+                  {!todoDoneCollapsed ? (
+                    <View style={styles.doneList}>
+                      {completedTodoItems.map((item) => (
+                        <TodoCard
+                          key={item.id}
+                          item={item}
+                          onToggle={() => onToggleTodo(item.id)}
+                          onDelete={() => onDeleteTodo(item.id)}
+                          onEdit={() => onEditTodo(item.id)}
+                        />
+                      ))}
+                    </View>
+                  ) : null}
                 </View>
               ) : null}
             </>
@@ -287,17 +298,25 @@ export const HomeScreen = ({
 
               {completedHabitItems.length ? (
                 <View style={styles.todoGroupDone}>
-                  <View style={styles.todoGroupHeader}>
-                    <Text style={styles.todoGroupTitleMuted}>今日已打卡</Text>
-                    <View style={[styles.todoGroupCountBadge, styles.todoGroupCountBadgeDone]}>
-                      <Text style={[styles.todoGroupCountText, styles.todoGroupCountTextDone]}>{completedHabitItems.length}</Text>
+                  <TouchableOpacity style={styles.collapsibleHeader} onPress={() => setHabitDoneCollapsed((value) => !value)} activeOpacity={0.86}>
+                    <View style={styles.collapsibleHeaderLeft}>
+                      <Text style={styles.todoGroupTitleMuted}>今日已打卡</Text>
+                      <View style={[styles.todoGroupCountBadge, styles.todoGroupCountBadgeDone]}>
+                        <Text style={[styles.todoGroupCountText, styles.todoGroupCountTextDone]}>{completedHabitItems.length}</Text>
+                      </View>
                     </View>
-                  </View>
-                  <View style={styles.doneList}>
-                    {completedHabitItems.map((habit) => (
-                      <HabitCard key={habit.id} habit={habit} onToggle={() => onToggleHabit(habit.id)} onEdit={() => onEditHabit(habit.id)} />
-                    ))}
-                  </View>
+                    <View style={styles.collapsibleHeaderRight}>
+                      <Text style={styles.collapsibleHint}>{habitDoneCollapsed ? '展开查看' : '收起'}</Text>
+                      <Ionicons name={habitDoneCollapsed ? 'chevron-down' : 'chevron-up'} size={16} color={colors.textMuted} />
+                    </View>
+                  </TouchableOpacity>
+                  {!habitDoneCollapsed ? (
+                    <View style={styles.doneList}>
+                      {completedHabitItems.map((habit) => (
+                        <HabitCard key={habit.id} habit={habit} onToggle={() => onToggleHabit(habit.id)} onEdit={() => onEditHabit(habit.id)} />
+                      ))}
+                    </View>
+                  ) : null}
                 </View>
               ) : null}
             </>
@@ -481,6 +500,28 @@ const styles = StyleSheet.create({
   todoGroupDone: {
     gap: 12,
     paddingTop: 4,
+  },
+  collapsibleHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    gap: 12,
+    paddingHorizontal: 2,
+  },
+  collapsibleHeaderLeft: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+  },
+  collapsibleHeaderRight: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+  },
+  collapsibleHint: {
+    color: colors.textMuted,
+    fontSize: 12,
+    fontWeight: '700',
   },
   todoGroupHeader: {
     flexDirection: 'row',
