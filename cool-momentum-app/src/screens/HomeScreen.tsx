@@ -50,11 +50,14 @@ export const HomeScreen = ({
   const today = getTodayKey();
   const pendingTodoItems = todos.filter((item) => !item.done);
   const completedTodoItems = todos.filter((item) => item.done);
+  const activeHabitItems = habits.filter((habit) => !habit.completions.includes(today));
+  const completedHabitItems = habits.filter((habit) => habit.completions.includes(today));
   const pendingTodos = pendingTodoItems.length;
   const doneTodos = completedTodoItems.length;
-  const habitsDoneToday = habits.filter((habit) => habit.completions.includes(today)).length;
-  const reminderCount = [...pendingTodoItems, ...habits.filter((habit) => !habit.completions.includes(today))].filter((item) => item.reminder?.enabled)
-    .length;
+  const habitsDoneToday = completedHabitItems.length;
+  const reminderCount = [...pendingTodoItems, ...activeHabitItems].filter((item) => item.reminder?.enabled).length;
+  const completionTone =
+    completionRate >= 80 ? '今天推进得很稳，继续保持。' : completionRate >= 40 ? '节奏已经拉起来了，再收掉几项会很舒服。' : '先清掉眼前最重要的一项，今天就会顺很多。';
 
   const emptyTodoText =
     selectedCategory === 'All'
@@ -95,6 +98,35 @@ export const HomeScreen = ({
         </View>
       </LinearGradient>
 
+      <GlassCard>
+        <View style={styles.pulseCardInner}>
+          <View style={styles.pulseCardHeader}>
+            <View style={styles.pulseBadge}>
+              <Ionicons name="pulse" size={14} color={colors.accentSecondary} />
+            </View>
+            <View style={styles.pulseHeaderTextBlock}>
+              <Text style={styles.pulseTitle}>今日节奏</Text>
+              <Text style={styles.pulseSubtitle}>{completionTone}</Text>
+            </View>
+          </View>
+
+          <View style={[styles.pulseMetricsRow, isCompactWidth && styles.pulseMetricsRowCompact]}>
+            <View style={styles.pulseMetricCard}>
+              <Text style={styles.pulseMetricLabel}>当前重点</Text>
+              <Text style={styles.pulseMetricValue} numberOfLines={1}>
+                {topCategory}
+              </Text>
+              <Text style={styles.pulseMetricMeta}>优先把这个节奏里的关键项收掉。</Text>
+            </View>
+            <View style={styles.pulseMetricCard}>
+              <Text style={styles.pulseMetricLabel}>今日进度</Text>
+              <Text style={styles.pulseMetricValue}>{Math.round(completionRate)}%</Text>
+              <Text style={styles.pulseMetricMeta}>已完成 {doneTodos + habitsDoneToday} 项动作</Text>
+            </View>
+          </View>
+        </View>
+      </GlassCard>
+
       {topTodos.length ? (
         <GlassCard>
           <View style={styles.topFocusInner}>
@@ -133,23 +165,25 @@ export const HomeScreen = ({
             </View>
           </View>
         </GlassCard>
-      ) : null}
-
-      <View style={[styles.summaryRow, styles.summaryRowCompact]}>
-        <GlassCard style={[styles.summaryCardPrimary, styles.summaryCardPrimaryCompact]}>
-          <View style={styles.summaryCardInnerPrimary}>
-            <Text style={styles.summaryCardEyebrow}>当前节奏</Text>
-            <Text style={styles.summaryCardValue}>{topCategory}</Text>
-            <Text style={styles.summaryCardMeta}>已完成 {doneTodos} 项</Text>
+      ) : (
+        <GlassCard>
+          <View style={styles.emptyTopFocusCard}>
+            <View style={styles.emptyTopFocusHeader}>
+              <View style={styles.emptyTopFocusBadge}>
+                <Ionicons name="sparkles" size={18} color={colors.white} />
+              </View>
+              <View style={styles.emptyTopFocusTextBlock}>
+                <Text style={styles.emptyTopFocusTitle}>先选出今天最重要的 1 件事</Text>
+                <Text style={styles.emptyTopFocusSubtitle}>竞品里最稳的做法不是堆功能，而是帮你先聚焦。先加一条待办，首页节奏会立刻立住。</Text>
+              </View>
+            </View>
+            <TouchableOpacity style={styles.emptyTopFocusCta} onPress={onAddPress} activeOpacity={0.88}>
+              <Ionicons name="add-circle-outline" size={18} color={colors.white} />
+              <Text style={styles.emptyTopFocusCtaText}>添加今天的第一条待办</Text>
+            </TouchableOpacity>
           </View>
         </GlassCard>
-        <GlassCard style={isCompactWidth ? [styles.summaryCardSecondary, styles.summaryCardSecondaryCompact] : styles.summaryCardSecondary}>
-          <View style={styles.summaryCardInnerSecondary}>
-            <Text style={styles.summaryCardMiniValue}>{reminderCount}</Text>
-            <Text style={styles.summaryCardMiniLabel}>提醒中</Text>
-          </View>
-        </GlassCard>
-      </View>
+      )}
 
       <View style={styles.filtersRow}>
         {categories.map((category) => {
@@ -222,7 +256,7 @@ export const HomeScreen = ({
         <View style={styles.quickCardInner}>
           <View>
             <Text style={styles.quickTitle}>新增内容</Text>
-            <Text style={styles.quickSubtitle}>把新的待办或习惯放进面板。</Text>
+            <Text style={styles.quickSubtitle}>把新的待办或习惯放进面板，今天的节奏就会继续往前走。</Text>
           </View>
           <TouchableOpacity style={styles.addButton} onPress={onAddPress}>
             <Ionicons name="add" size={22} color={colors.white} />
@@ -234,9 +268,39 @@ export const HomeScreen = ({
         <SectionTitle title="习惯" subtitle="每天点亮，长期复利。" />
         <View style={styles.list}>
           {habits.length ? (
-            habits.map((habit) => (
-              <HabitCard key={habit.id} habit={habit} onToggle={() => onToggleHabit(habit.id)} onEdit={() => onEditHabit(habit.id)} />
-            ))
+            <>
+              <View style={styles.todoGroup}>
+                <View style={styles.todoGroupHeader}>
+                  <Text style={styles.todoGroupTitle}>今天待打卡</Text>
+                  <View style={styles.todoGroupCountBadge}>
+                    <Text style={styles.todoGroupCountText}>{activeHabitItems.length}</Text>
+                  </View>
+                </View>
+                {activeHabitItems.length ? (
+                  activeHabitItems.map((habit) => (
+                    <HabitCard key={habit.id} habit={habit} onToggle={() => onToggleHabit(habit.id)} onEdit={() => onEditHabit(habit.id)} />
+                  ))
+                ) : (
+                  <Text style={styles.groupHintText}>今天这组习惯已经全部点亮啦，继续保持这种节奏。</Text>
+                )}
+              </View>
+
+              {completedHabitItems.length ? (
+                <View style={styles.todoGroupDone}>
+                  <View style={styles.todoGroupHeader}>
+                    <Text style={styles.todoGroupTitleMuted}>今日已打卡</Text>
+                    <View style={[styles.todoGroupCountBadge, styles.todoGroupCountBadgeDone]}>
+                      <Text style={[styles.todoGroupCountText, styles.todoGroupCountTextDone]}>{completedHabitItems.length}</Text>
+                    </View>
+                  </View>
+                  <View style={styles.doneList}>
+                    {completedHabitItems.map((habit) => (
+                      <HabitCard key={habit.id} habit={habit} onToggle={() => onToggleHabit(habit.id)} onEdit={() => onEditHabit(habit.id)} />
+                    ))}
+                  </View>
+                </View>
+              ) : null}
+            </>
           ) : (
             <Text style={styles.emptyText}>{emptyHabitText}</Text>
           )}
@@ -292,6 +356,36 @@ const styles = StyleSheet.create({
   heroMetricValue: { color: colors.white, fontSize: 22, fontWeight: '800' },
   heroMetricLabel: { color: 'rgba(255,255,255,0.68)', fontSize: 11, fontWeight: '700' },
   heroDivider: { width: 1, alignSelf: 'stretch', backgroundColor: 'rgba(255,255,255,0.12)' },
+  pulseCardInner: { paddingHorizontal: 16, paddingVertical: 16, gap: 14 },
+  pulseCardHeader: { flexDirection: 'row', gap: 12, alignItems: 'flex-start' },
+  pulseBadge: {
+    width: 34,
+    height: 34,
+    borderRadius: 17,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: 'rgba(36, 200, 255, 0.12)',
+    borderWidth: 1,
+    borderColor: 'rgba(36, 200, 255, 0.18)',
+  },
+  pulseHeaderTextBlock: { flex: 1, gap: 4 },
+  pulseTitle: { color: colors.text, fontSize: 18, fontWeight: '800' },
+  pulseSubtitle: { color: colors.textMuted, fontSize: 12, lineHeight: 18 },
+  pulseMetricsRow: { flexDirection: 'row', gap: 10 },
+  pulseMetricsRowCompact: { flexDirection: 'column' },
+  pulseMetricCard: {
+    flex: 1,
+    gap: 6,
+    paddingHorizontal: 14,
+    paddingVertical: 14,
+    borderRadius: 18,
+    backgroundColor: 'rgba(255,255,255,0.04)',
+    borderWidth: 1,
+    borderColor: colors.border,
+  },
+  pulseMetricLabel: { color: colors.textMuted, fontSize: 11, fontWeight: '700' },
+  pulseMetricValue: { color: colors.text, fontSize: 18, fontWeight: '800' },
+  pulseMetricMeta: { color: colors.textMuted, fontSize: 12, lineHeight: 18 },
   topFocusInner: { paddingHorizontal: 16, paddingVertical: 16, gap: 10 },
   topFocusHeader: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 12 },
   topFocusTitle: { color: colors.text, fontSize: 20, fontWeight: '800' },
@@ -337,19 +431,32 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(255,184,92,0.14)',
   },
   inlineReminderText: { color: colors.warning, fontSize: 11, fontWeight: '700' },
-  summaryRow: { flexDirection: 'row', gap: 10, alignItems: 'stretch' },
-  summaryRowCompact: { flexDirection: 'column' },
-  summaryCardPrimary: { flex: 1, minWidth: 0 },
-  summaryCardPrimaryCompact: { width: '100%' },
-  summaryCardSecondary: { flexBasis: 96, flexGrow: 0, flexShrink: 1, minWidth: 88, maxWidth: 104 },
-  summaryCardSecondaryCompact: { width: '100%', maxWidth: '100%' },
-  summaryCardInnerPrimary: { padding: 16, gap: 4 },
-  summaryCardInnerSecondary: { paddingHorizontal: 12, paddingVertical: 16, gap: 4, alignItems: 'center', justifyContent: 'center', minHeight: 92 },
-  summaryCardEyebrow: { color: colors.textMuted, fontSize: 11, fontWeight: '700' },
-  summaryCardValue: { color: colors.text, fontSize: 18, fontWeight: '800' },
-  summaryCardMeta: { color: colors.textMuted, fontSize: 11 },
-  summaryCardMiniValue: { color: colors.text, fontSize: 22, fontWeight: '800' },
-  summaryCardMiniLabel: { color: colors.textMuted, fontSize: 11, fontWeight: '700' },
+  emptyTopFocusCard: { paddingHorizontal: 16, paddingVertical: 16, gap: 14 },
+  emptyTopFocusHeader: { flexDirection: 'row', gap: 12, alignItems: 'flex-start' },
+  emptyTopFocusBadge: {
+    width: 38,
+    height: 38,
+    borderRadius: 19,
+    backgroundColor: colors.accent,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  emptyTopFocusTextBlock: { flex: 1, gap: 4 },
+  emptyTopFocusTitle: { color: colors.text, fontSize: 18, fontWeight: '800', lineHeight: 24 },
+  emptyTopFocusSubtitle: { color: colors.textMuted, fontSize: 12, lineHeight: 18 },
+  emptyTopFocusCta: {
+    minHeight: 48,
+    borderRadius: 16,
+    paddingHorizontal: 14,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 8,
+    backgroundColor: 'rgba(124, 92, 255, 0.18)',
+    borderWidth: 1,
+    borderColor: 'rgba(124, 92, 255, 0.26)',
+  },
+  emptyTopFocusCtaText: { color: colors.white, fontSize: 14, fontWeight: '800' },
   filtersRow: {
     flexDirection: 'row',
     flexWrap: 'wrap',
@@ -434,7 +541,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
   },
   quickTitle: { color: colors.text, fontSize: 16, fontWeight: '700' },
-  quickSubtitle: { marginTop: 4, color: colors.textMuted, fontSize: 12, lineHeight: 18 },
+  quickSubtitle: { marginTop: 4, color: colors.textMuted, fontSize: 12, lineHeight: 18, maxWidth: 240 },
   addButton: {
     width: 46,
     height: 46,
