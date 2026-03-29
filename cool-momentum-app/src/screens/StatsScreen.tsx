@@ -20,6 +20,8 @@ type TrendMode = 'week' | 'month';
 
 export const StatsScreen = ({ habits, todos, completionRate, bestStreak, totalDone, topCategory, categorySummary }: Props) => {
   const [trendMode, setTrendMode] = useState<TrendMode>('week');
+  const { width } = useWindowDimensions();
+  const isCompactWidth = width < 390;
 
   const trendData = useMemo(() => {
     const range = trendMode === 'week' ? 7 : 30;
@@ -88,16 +90,30 @@ export const StatsScreen = ({ habits, todos, completionRate, bestStreak, totalDo
 
       <GlassCard>
         <View style={styles.trendInner}>
-          <View style={styles.trendHeader}>
-            <View>
+          <View style={[styles.trendHeader, isCompactWidth && styles.trendHeaderCompact]}>
+            <View style={styles.trendHeading}>
               <Text style={styles.sectionEyebrow}>趋势</Text>
               <Text style={styles.sectionTitle}>{trendMode === 'week' ? '近 7 天' : '近 30 天'}</Text>
             </View>
-            <View style={styles.trendSwitch}>
-              <Pressable style={[styles.trendSwitchPill, trendMode === 'week' && styles.trendSwitchPillActive]} onPress={() => setTrendMode('week')}>
+            <View style={[styles.trendSwitch, isCompactWidth && styles.trendSwitchCompact]}>
+              <Pressable
+                style={[
+                  styles.trendSwitchPill,
+                  isCompactWidth && styles.trendSwitchPillCompact,
+                  trendMode === 'week' && styles.trendSwitchPillActive,
+                ]}
+                onPress={() => setTrendMode('week')}
+              >
                 <Text style={[styles.trendSwitchText, trendMode === 'week' && styles.trendSwitchTextActive]}>周</Text>
               </Pressable>
-              <Pressable style={[styles.trendSwitchPill, trendMode === 'month' && styles.trendSwitchPillActive]} onPress={() => setTrendMode('month')}>
+              <Pressable
+                style={[
+                  styles.trendSwitchPill,
+                  isCompactWidth && styles.trendSwitchPillCompact,
+                  trendMode === 'month' && styles.trendSwitchPillActive,
+                ]}
+                onPress={() => setTrendMode('month')}
+              >
                 <Text style={[styles.trendSwitchText, trendMode === 'month' && styles.trendSwitchTextActive]}>月</Text>
               </Pressable>
             </View>
@@ -249,7 +265,9 @@ const styles = StyleSheet.create({
   heroCardMiniValue: { color: colors.text, fontSize: 24, fontWeight: '800' },
   heroCardMiniLabel: { color: colors.textMuted, fontSize: 12, fontWeight: '700' },
   trendInner: { padding: 16, gap: 12 },
-  trendHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', gap: 12 },
+  trendHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start', gap: 12, flexWrap: 'wrap' },
+  trendHeaderCompact: { alignItems: 'stretch' },
+  trendHeading: { flex: 1, minWidth: 0 },
   sectionEyebrow: { color: colors.textMuted, fontSize: 11, fontWeight: '700' },
   sectionTitle: { color: colors.text, fontSize: 18, fontWeight: '800' },
   trendSwitch: {
@@ -258,8 +276,13 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(255,255,255,0.06)',
     padding: 4,
     borderRadius: 999,
+    flexShrink: 1,
+    maxWidth: '100%',
+    alignSelf: 'flex-start',
   },
+  trendSwitchCompact: { width: '100%', alignSelf: 'stretch' },
   trendSwitchPill: { paddingHorizontal: 12, paddingVertical: 8, borderRadius: 999 },
+  trendSwitchPillCompact: { flex: 1, alignItems: 'center' },
   trendSwitchPillActive: { backgroundColor: colors.accent },
   trendSwitchText: { color: colors.textMuted, fontSize: 12, fontWeight: '700' },
   trendSwitchTextActive: { color: colors.white },
