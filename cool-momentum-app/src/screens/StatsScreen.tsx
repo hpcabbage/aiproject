@@ -1,9 +1,10 @@
 import { useMemo, useState } from 'react';
 import { Pressable, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 import { GlassCard } from '../components/GlassCard';
 import { SectionTitle } from '../components/SectionTitle';
 import { colors } from '../theme/colors';
-import { categoryLabels, Category, Habit, priorityLabels, TodoItem } from '../types';
+import { categoryLabels, Category, Habit, TodoItem } from '../types';
 import { getDateLabel, getRecentDateKeys, getWeekCompletion, getTodayKey, toDateKey } from '../utils/date';
 
 type Props = {
@@ -68,32 +69,56 @@ export const StatsScreen = ({ habits, todos, completionRate, bestStreak, totalDo
 
   const topDoneCategory = categoryDoneSummary.reduce((best, current) => (current.done > best.done ? current : best), categoryDoneSummary[0]);
   const emptyTrend = trendTotal === 0;
+  const momentumSummary =
+    completionRate >= 80 ? '这几天的推进质量很稳，已经接近理想节奏。' : completionRate >= 40 ? '节奏已经起来了，再往前收几项会更漂亮。' : '结果页先不需要太好看，先把今天最重要的几项做出来。';
+  const insightSummary =
+    topDoneCategory && topDoneCategory.done > 0
+      ? `今天推进最多的是「${categoryLabels[topDoneCategory.key]}」，说明你的注意力正在向这里集中。`
+      : `当前最重的内容还是「${topCategory}」，等你开始完成动作后，这里会更有参考价值。`;
 
   return (
     <View style={styles.wrapper}>
-      <SectionTitle title="统计" subtitle="看结果，不看解释。" />
+      <SectionTitle title="统计" subtitle="看结果，也看节奏怎么形成。" />
 
-      <View style={[styles.heroRow, styles.heroRowCompact]}>
-        <GlassCard style={[styles.heroCardPrimary, styles.heroCardPrimaryCompact]}>
-          <View style={styles.heroCardInnerPrimary}>
-            <Text style={styles.heroCardValue}>{Math.round(completionRate)}%</Text>
-            <Text style={styles.heroCardLabel}>今日完成率</Text>
+      <GlassCard>
+        <View style={styles.heroPanel}>
+          <View style={styles.heroTop}>
+            <View style={styles.heroBadge}>
+              <Ionicons name="bar-chart-outline" size={16} color={colors.accentSecondary} />
+            </View>
+            <View style={styles.heroTextBlock}>
+              <Text style={styles.heroEyebrow}>RESULT SNAPSHOT</Text>
+              <Text style={styles.heroTitle}>今天的推进结果</Text>
+              <Text style={styles.heroSubtitle}>{momentumSummary}</Text>
+            </View>
           </View>
-        </GlassCard>
-        <GlassCard style={[styles.heroCardSecondary, styles.heroCardSecondaryCompact]}>
-          <View style={styles.heroCardInnerSecondary}>
-            <Text style={styles.heroCardMiniValue}>{totalDone}</Text>
-            <Text style={styles.heroCardMiniLabel}>总完成</Text>
+
+          <View style={[styles.heroMetricsRow, isCompactWidth && styles.heroMetricsRowCompact]}>
+            <View style={[styles.heroMetricCard, styles.heroMetricCardPrimary]}>
+              <Text style={styles.heroMetricValue}>{Math.round(completionRate)}%</Text>
+              <Text style={styles.heroMetricLabel}>今日完成率</Text>
+              <Text style={styles.heroMetricMeta}>总共已拿下 {totalDone} 项动作</Text>
+            </View>
+            <View style={styles.heroMetricCard}>
+              <Text style={styles.heroMetricValueSmall}>{topCategory}</Text>
+              <Text style={styles.heroMetricLabel}>当前主战场</Text>
+              <Text style={styles.heroMetricMeta}>现在最重的节奏落在这里</Text>
+            </View>
           </View>
-        </GlassCard>
-      </View>
+        </View>
+      </GlassCard>
 
       <GlassCard>
         <View style={styles.trendInner}>
           <View style={[styles.trendHeader, isCompactWidth && styles.trendHeaderCompact]}>
             <View style={styles.trendHeading}>
               <Text style={styles.sectionEyebrow}>趋势</Text>
-              <Text style={styles.sectionTitle}>{trendMode === 'week' ? '近 7 天' : '近 30 天'}</Text>
+              <Text style={styles.sectionTitle}>{trendMode === 'week' ? '近 7 天推进曲线' : '近 30 天推进曲线'}</Text>
+              <Text style={styles.sectionSubtitle}>
+                {emptyTrend
+                  ? '还没有形成连续趋势，先开始推进几项，结果页才会慢慢长出来。'
+                  : `这段时间一共推进了 ${trendTotal} 项动作，最好的一天完成了 ${bestDay?.total ?? 0} 项。`}
+              </Text>
             </View>
             <View style={[styles.trendSwitch, isCompactWidth && styles.trendSwitchCompact]}>
               <Pressable
@@ -167,12 +192,14 @@ export const StatsScreen = ({ habits, todos, completionRate, bestStreak, totalDo
           <View style={styles.metricInnerCompact}>
             <Text style={styles.metricValueSmall}>{bestStreak}</Text>
             <Text style={styles.metricLabel}>最佳连续天数</Text>
+            <Text style={styles.metricMeta}>最稳的时候你能连续把节奏保持多久</Text>
           </View>
         </GlassCard>
         <GlassCard style={styles.metricCard}>
           <View style={styles.metricInnerCompact}>
             <Text style={styles.metricValueSmall}>{Math.round(highPriorityRate)}%</Text>
             <Text style={styles.metricLabel}>高优先级拿下率</Text>
+            <Text style={styles.metricMeta}>真正重要的事有没有被你优先收掉</Text>
           </View>
         </GlassCard>
       </View>
@@ -180,7 +207,8 @@ export const StatsScreen = ({ habits, todos, completionRate, bestStreak, totalDo
       <GlassCard>
         <View style={styles.summaryInner}>
           <Text style={styles.sectionEyebrow}>分类</Text>
-          <Text style={styles.sectionTitle}>{topCategory}</Text>
+          <Text style={styles.sectionTitle}>当前内容分布</Text>
+          <Text style={styles.sectionSubtitle}>现在内容最多的是「{topCategory}」，它基本定义了你最近这段时间的注意力方向。</Text>
           <View style={styles.summaryRow}>
             {(Object.keys(categorySummary) as Category[]).map((key) => (
               <View key={key} style={styles.summaryBadge}>
@@ -195,7 +223,8 @@ export const StatsScreen = ({ habits, todos, completionRate, bestStreak, totalDo
       <GlassCard>
         <View style={styles.summaryInner}>
           <Text style={styles.sectionEyebrow}>洞察</Text>
-          <Text style={styles.sectionTitle}>今天你主要在推进什么</Text>
+          <Text style={styles.sectionTitle}>今天的推进重心</Text>
+          <Text style={styles.sectionSubtitle}>{insightSummary}</Text>
           <View style={styles.insightList}>
             {categoryDoneSummary.map((item) => {
               const percent = item.total === 0 ? 0 : Math.round((item.done / item.total) * 100);
@@ -203,7 +232,9 @@ export const StatsScreen = ({ habits, todos, completionRate, bestStreak, totalDo
                 <View key={item.key} style={styles.insightRow}>
                   <View style={styles.insightRowTop}>
                     <Text style={styles.insightLabel}>{categoryLabels[item.key]}</Text>
-                    <Text style={styles.insightValue}>{item.done}/{item.total} · {percent}%</Text>
+                    <Text style={styles.insightValue}>
+                      {item.done}/{item.total} · {percent}%
+                    </Text>
                   </View>
                   <View style={styles.insightTrack}>
                     <View style={[styles.insightFill, { width: `${percent}%` }]} />
@@ -252,24 +283,49 @@ export const StatsScreen = ({ habits, todos, completionRate, bestStreak, totalDo
 
 const styles = StyleSheet.create({
   wrapper: { gap: 14 },
-  heroRow: { flexDirection: 'row', gap: 10, alignItems: 'stretch' },
-  heroRowCompact: { flexDirection: 'column' },
-  heroCardPrimary: { flex: 1, minWidth: 0 },
-  heroCardPrimaryCompact: { width: '100%' },
-  heroCardSecondary: { flexBasis: 100, flexGrow: 0, flexShrink: 1, minWidth: 90, maxWidth: 108 },
-  heroCardSecondaryCompact: { width: '100%', maxWidth: '100%' },
-  heroCardInnerPrimary: { paddingHorizontal: 16, paddingVertical: 14, minHeight: 92, justifyContent: 'center', gap: 3 },
-  heroCardInnerSecondary: { paddingHorizontal: 12, paddingVertical: 14, minHeight: 86, justifyContent: 'center', alignItems: 'center', gap: 2 },
-  heroCardValue: { color: colors.text, fontSize: 30, fontWeight: '800' },
-  heroCardLabel: { color: colors.textMuted, fontSize: 11, fontWeight: '700' },
-  heroCardMiniValue: { color: colors.text, fontSize: 24, fontWeight: '800' },
-  heroCardMiniLabel: { color: colors.textMuted, fontSize: 12, fontWeight: '700' },
+  heroPanel: { padding: 16, gap: 14 },
+  heroTop: { flexDirection: 'row', gap: 12, alignItems: 'flex-start' },
+  heroBadge: {
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: 'rgba(36, 200, 255, 0.12)',
+    borderWidth: 1,
+    borderColor: 'rgba(36, 200, 255, 0.2)',
+  },
+  heroTextBlock: { flex: 1, gap: 4 },
+  heroEyebrow: { color: colors.textMuted, fontSize: 11, fontWeight: '700', letterSpacing: 1.1 },
+  heroTitle: { color: colors.text, fontSize: 22, fontWeight: '800' },
+  heroSubtitle: { color: colors.textMuted, fontSize: 12, lineHeight: 18 },
+  heroMetricsRow: { flexDirection: 'row', gap: 10 },
+  heroMetricsRowCompact: { flexDirection: 'column' },
+  heroMetricCard: {
+    flex: 1,
+    minWidth: 0,
+    borderRadius: 18,
+    paddingHorizontal: 14,
+    paddingVertical: 14,
+    backgroundColor: 'rgba(255,255,255,0.04)',
+    borderWidth: 1,
+    borderColor: colors.border,
+    gap: 4,
+  },
+  heroMetricCardPrimary: {
+    flex: 1.2,
+  },
+  heroMetricValue: { color: colors.text, fontSize: 30, fontWeight: '800' },
+  heroMetricValueSmall: { color: colors.text, fontSize: 18, fontWeight: '800' },
+  heroMetricLabel: { color: colors.textMuted, fontSize: 11, fontWeight: '700' },
+  heroMetricMeta: { color: colors.textMuted, fontSize: 12, lineHeight: 18 },
   trendInner: { padding: 16, gap: 12 },
   trendHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start', gap: 12, flexWrap: 'wrap' },
   trendHeaderCompact: { alignItems: 'stretch' },
-  trendHeading: { flex: 1, minWidth: 0 },
+  trendHeading: { flex: 1, minWidth: 0, gap: 2 },
   sectionEyebrow: { color: colors.textMuted, fontSize: 11, fontWeight: '700' },
   sectionTitle: { color: colors.text, fontSize: 18, fontWeight: '800' },
+  sectionSubtitle: { color: colors.textMuted, fontSize: 12, lineHeight: 18, marginTop: 2 },
   trendSwitch: {
     flexDirection: 'row',
     gap: 6,
@@ -320,9 +376,10 @@ const styles = StyleSheet.create({
   trendStatLabel: { color: colors.textMuted, fontSize: 11, fontWeight: '700' },
   grid: { flexDirection: 'row', gap: 10 },
   metricCard: { flex: 1 },
-  metricInnerCompact: { minHeight: 92, padding: 16, justifyContent: 'center', gap: 4 },
+  metricInnerCompact: { minHeight: 112, padding: 16, justifyContent: 'center', gap: 4 },
   metricValueSmall: { color: colors.text, fontSize: 24, fontWeight: '800' },
   metricLabel: { color: colors.textMuted, fontSize: 12, fontWeight: '700' },
+  metricMeta: { color: colors.textMuted, fontSize: 12, lineHeight: 18 },
   summaryInner: { padding: 16, gap: 10 },
   summaryRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
   summaryBadge: {
