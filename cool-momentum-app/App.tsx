@@ -75,6 +75,17 @@ export default function App() {
   const topTodos = useMemo(() => filteredTodos.filter((item) => !item.done).slice(0, 3), [filteredTodos]);
   const editingTodo = useMemo(() => state.todos.find((item) => item.id === editingTodoId) ?? null, [editingTodoId, state.todos]);
   const editingHabit = useMemo(() => state.habits.find((item) => item.id === editingHabitId) ?? null, [editingHabitId, state.habits]);
+  const composerTitle = editingTodo || editingHabit ? '编辑内容' : draftMode === 'todo' ? '新增待办' : '新增习惯';
+  const composerSubtitle =
+    editingTodo || editingHabit
+      ? '直接改，不用删掉重建。把这条内容调成你现在真正想执行的状态。'
+      : draftMode === 'todo'
+        ? '把今天真正要推进的事放进来，首页会自动帮你拉起节奏。'
+        : '把值得长期坚持的动作放进来，让它每天都更容易被点亮。';
+  const composerSummary =
+    draftMode === 'todo'
+      ? `${editingTodo ? '这条待办' : '新待办'}会出现在首页行动区，适合放今天明确要推进的事。`
+      : `${editingHabit ? '这条习惯' : '新习惯'}会进入每日打卡区，适合放需要长期复利的动作。`;
   const reminderHint = useMemo(() => {
     if (!reminderEnabled) {
       return '这是按天重复的提醒，不是倒计时；保存后会按设置时间每天提醒你。';
@@ -392,58 +403,85 @@ export default function App() {
               }}
             />
             <View style={styles.sheet}>
-              <Text style={styles.sheetTitle}>{editingTodo || editingHabit ? '编辑内容' : '新增内容'}</Text>
-              <Text style={styles.sheetSubtitle}>
-                {editingTodo || editingHabit ? '参考竞品的低摩擦编辑体验，不用删掉重建。' : '这版已经支持分类了，任务和习惯都能放进不同节奏里。'}
-              </Text>
+              <View style={styles.sheetHandle} />
+
+              <View style={styles.sheetHeroCard}>
+                <View style={styles.sheetHeroHeader}>
+                  <View style={[styles.sheetHeroIcon, draftMode === 'todo' ? styles.sheetHeroIconTodo : styles.sheetHeroIconHabit]}>
+                    <Ionicons name={draftMode === 'todo' ? 'checkbox-outline' : 'flash-outline'} size={18} color={colors.white} />
+                  </View>
+                  <View style={styles.sheetHeroTextBlock}>
+                    <Text style={styles.sheetTitle}>{composerTitle}</Text>
+                    <Text style={styles.sheetSubtitle}>{composerSubtitle}</Text>
+                  </View>
+                </View>
+
+                <View style={styles.sheetHeroFootnote}>
+                  <Text style={styles.sheetHeroFootnoteText}>{composerSummary}</Text>
+                </View>
+              </View>
 
               {editingTodo || editingHabit ? null : (
-                <View style={styles.switcher}>
-                  <Pressable style={[styles.switchPill, draftMode === 'todo' && styles.switchPillActive]} onPress={() => setDraftMode('todo')}>
-                    <Text style={[styles.switchText, draftMode === 'todo' && styles.switchTextActive]}>待办</Text>
-                  </Pressable>
-                  <Pressable style={[styles.switchPill, draftMode === 'habit' && styles.switchPillActive]} onPress={() => setDraftMode('habit')}>
-                    <Text style={[styles.switchText, draftMode === 'habit' && styles.switchTextActive]}>习惯</Text>
-                  </Pressable>
+                <View style={styles.formSection}>
+                  <Text style={styles.formSectionLabel}>内容类型</Text>
+                  <View style={styles.switcher}>
+                    <Pressable style={[styles.switchPill, draftMode === 'todo' && styles.switchPillActive]} onPress={() => setDraftMode('todo')}>
+                      <Text style={[styles.switchText, draftMode === 'todo' && styles.switchTextActive]}>待办</Text>
+                    </Pressable>
+                    <Pressable style={[styles.switchPill, draftMode === 'habit' && styles.switchPillActive]} onPress={() => setDraftMode('habit')}>
+                      <Text style={[styles.switchText, draftMode === 'habit' && styles.switchTextActive]}>习惯</Text>
+                    </Pressable>
+                  </View>
                 </View>
               )}
 
-              <View style={styles.categoryWrap}>
-                {categories.map((category) => {
-                  const active = category === draftCategory;
-                  return (
-                    <Pressable key={category} style={[styles.categoryPill, active && styles.categoryPillActive]} onPress={() => setDraftCategory(category)}>
-                      <Text style={[styles.categoryText, active && styles.categoryTextActive]}>{categoryLabels[category]}</Text>
-                    </Pressable>
-                  );
-                })}
-              </View>
-
-              {draftMode === 'todo' ? (
-                <View style={styles.priorityWrap}>
-                  {priorities.map((priority) => {
-                    const active = priority === draftPriority;
+              <View style={styles.formSection}>
+                <Text style={styles.formSectionLabel}>放进哪个节奏</Text>
+                <View style={styles.categoryWrap}>
+                  {categories.map((category) => {
+                    const active = category === draftCategory;
                     return (
-                      <Pressable
-                        key={priority}
-                        style={[styles.priorityPill, active && styles.priorityPillActive]}
-                        onPress={() => setDraftPriority(priority)}
-                      >
-                        <Text style={[styles.priorityText, active && styles.priorityTextActive]}>{priorityLabels[priority]}</Text>
+                      <Pressable key={category} style={[styles.categoryPill, active && styles.categoryPillActive]} onPress={() => setDraftCategory(category)}>
+                        <Text style={[styles.categoryText, active && styles.categoryTextActive]}>{categoryLabels[category]}</Text>
                       </Pressable>
                     );
                   })}
                 </View>
+              </View>
+
+              {draftMode === 'todo' ? (
+                <View style={styles.formSection}>
+                  <Text style={styles.formSectionLabel}>优先级</Text>
+                  <View style={styles.priorityWrap}>
+                    {priorities.map((priority) => {
+                      const active = priority === draftPriority;
+                      return (
+                        <Pressable
+                          key={priority}
+                          style={[styles.priorityPill, active && styles.priorityPillActive]}
+                          onPress={() => setDraftPriority(priority)}
+                        >
+                          <Text style={[styles.priorityText, active && styles.priorityTextActive]}>{priorityLabels[priority]}</Text>
+                        </Pressable>
+                      );
+                    })}
+                  </View>
+                </View>
               ) : null}
 
-              <TextInput
-                placeholder={placeholder}
-                placeholderTextColor={colors.textMuted}
-                style={styles.input}
-                value={draftValue}
-                onChangeText={setDraftValue}
-                autoFocus
-              />
+              <View style={styles.formSection}>
+                <Text style={styles.formSectionLabel}>{draftMode === 'todo' ? '这条要推进什么' : '这条习惯要做什么'}</Text>
+                <TextInput
+                  placeholder={placeholder}
+                  placeholderTextColor={colors.textMuted}
+                  style={[styles.input, styles.textareaInput]}
+                  value={draftValue}
+                  onChangeText={setDraftValue}
+                  autoFocus
+                  multiline
+                  textAlignVertical="top"
+                />
+              </View>
 
               <View style={styles.reminderCard}>
                 <View style={styles.reminderHeader}>
@@ -486,19 +524,21 @@ export default function App() {
                 {testReminderStatus ? <Text style={styles.testReminderStatus}>{testReminderStatus}</Text> : null}
               </View>
 
-              <TouchableOpacity style={styles.submitButton} onPress={handleSubmit}>
-                <Text style={styles.submitText}>{editingTodo || editingHabit ? '保存修改' : '加入面板'}</Text>
-              </TouchableOpacity>
+              <View style={styles.primaryActionsBlock}>
+                <TouchableOpacity style={styles.submitButton} onPress={handleSubmit}>
+                  <Text style={styles.submitText}>{editingTodo || editingHabit ? '保存修改' : draftMode === 'todo' ? '加入今日待办' : '加入习惯面板'}</Text>
+                </TouchableOpacity>
 
-              <TouchableOpacity
-                style={styles.ghostButton}
-                onPress={() => {
-                  resetComposer();
-                  setModalVisible(false);
-                }}
-              >
-                <Text style={styles.ghostButtonText}>先不改了，返回面板</Text>
-              </TouchableOpacity>
+                <TouchableOpacity
+                  style={styles.ghostButton}
+                  onPress={() => {
+                    resetComposer();
+                    setModalVisible(false);
+                  }}
+                >
+                  <Text style={styles.ghostButtonText}>先不改了，返回面板</Text>
+                </TouchableOpacity>
+              </View>
 
               {editingTodoId || editingHabitId ? (
                 <TouchableOpacity
@@ -596,13 +636,68 @@ const styles = StyleSheet.create({
     borderTopLeftRadius: 28,
     borderTopRightRadius: 28,
     padding: 22,
-    gap: 16,
+    gap: 18,
     backgroundColor: '#0D1430',
     borderTopWidth: 1,
     borderColor: colors.border,
   },
+  sheetHandle: {
+    alignSelf: 'center',
+    width: 42,
+    height: 5,
+    borderRadius: 999,
+    backgroundColor: 'rgba(255,255,255,0.14)',
+    marginTop: -4,
+  },
+  sheetHeroCard: {
+    gap: 12,
+    padding: 16,
+    borderRadius: 22,
+    backgroundColor: 'rgba(255,255,255,0.05)',
+    borderWidth: 1,
+    borderColor: colors.border,
+  },
+  sheetHeroHeader: {
+    flexDirection: 'row',
+    gap: 12,
+    alignItems: 'flex-start',
+  },
+  sheetHeroIcon: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  sheetHeroIconTodo: {
+    backgroundColor: 'rgba(124, 92, 255, 0.82)',
+  },
+  sheetHeroIconHabit: {
+    backgroundColor: 'rgba(36, 200, 255, 0.82)',
+  },
+  sheetHeroTextBlock: { flex: 1, gap: 4 },
   sheetTitle: { color: colors.text, fontSize: 24, fontWeight: '800' },
   sheetSubtitle: { color: colors.textMuted, lineHeight: 20 },
+  sheetHeroFootnote: {
+    paddingHorizontal: 12,
+    paddingVertical: 10,
+    borderRadius: 16,
+    backgroundColor: 'rgba(255,255,255,0.04)',
+  },
+  sheetHeroFootnoteText: {
+    color: colors.textMuted,
+    fontSize: 12,
+    lineHeight: 18,
+  },
+  formSection: {
+    gap: 10,
+  },
+  formSectionLabel: {
+    color: colors.text,
+    fontSize: 13,
+    fontWeight: '800',
+    paddingHorizontal: 2,
+  },
   switcher: {
     flexDirection: 'row',
     backgroundColor: 'rgba(255,255,255,0.06)',
@@ -646,6 +741,11 @@ const styles = StyleSheet.create({
     color: colors.text,
     paddingHorizontal: 16,
     fontSize: 16,
+  },
+  textareaInput: {
+    minHeight: 96,
+    paddingTop: 16,
+    paddingBottom: 16,
   },
   inputDisabled: { opacity: 0.45 },
   formHintCard: {
@@ -708,6 +808,9 @@ const styles = StyleSheet.create({
     color: colors.textMuted,
     fontSize: 12,
     lineHeight: 18,
+  },
+  primaryActionsBlock: {
+    gap: 10,
   },
   submitButton: {
     minHeight: 54,
