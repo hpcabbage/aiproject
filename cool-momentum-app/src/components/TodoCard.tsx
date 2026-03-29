@@ -10,7 +10,7 @@ type Props = {
   onEdit: () => void;
 };
 
-export const TodoCard = ({ item, onToggle, onDelete, onEdit }: Props) => {
+export const TodoCard = ({ item, onToggle, onEdit }: Props) => {
   const reminderText = item.reminder?.enabled ? item.reminder.time : null;
 
   return (
@@ -48,14 +48,10 @@ export const TodoCard = ({ item, onToggle, onDelete, onEdit }: Props) => {
         </View>
       </Pressable>
 
-      <View style={styles.actions}>
-        <Pressable onPress={onEdit} hitSlop={12} style={styles.actionButton}>
-          <Ionicons name="create-outline" size={20} color={colors.textMuted} />
-        </Pressable>
-        <Pressable onPress={onDelete} hitSlop={12} style={styles.actionButton}>
-          <Ionicons name="close" size={22} color={colors.textMuted} />
-        </Pressable>
-      </View>
+      <Pressable onPress={onEdit} hitSlop={12} style={styles.editButton}>
+        <Ionicons name="create-outline" size={16} color={colors.textMuted} />
+        <Text style={styles.editButtonText}>编辑</Text>
+      </Pressable>
     </View>
   );
 };
@@ -145,15 +141,22 @@ const styles = StyleSheet.create({
     color: colors.textMuted,
     fontSize: 11,
   },
-  actions: {
+  editButton: {
     alignSelf: 'flex-start',
-    gap: 6,
-    paddingTop: 2,
-  },
-  actionButton: {
-    width: 32,
-    height: 32,
+    flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'center',
+    gap: 4,
+    marginTop: 2,
+    paddingHorizontal: 10,
+    paddingVertical: 8,
+    borderRadius: 999,
+    backgroundColor: 'rgba(255,255,255,0.04)',
+    borderWidth: 1,
+    borderColor: colors.border,
+  },
+  editButtonText: {
+    color: colors.textMuted,
+    fontSize: 12,
+    fontWeight: '700',
   },
 });

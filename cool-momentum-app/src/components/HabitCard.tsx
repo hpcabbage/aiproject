@@ -45,8 +45,9 @@ export const HabitCard = ({ habit, onToggle, onEdit }: Props) => {
         </View>
       </Pressable>
 
-      <Pressable onPress={onEdit} hitSlop={12} style={styles.actionButton}>
-        <Ionicons name="create-outline" size={20} color={colors.textMuted} />
+      <Pressable onPress={onEdit} hitSlop={12} style={styles.editButton}>
+        <Ionicons name="create-outline" size={16} color={colors.textMuted} />
+        <Text style={styles.editButtonText}>编辑</Text>
       </Pressable>
     </View>
   );
@@ -146,12 +147,22 @@ const styles = StyleSheet.create({
     color: colors.textMuted,
     fontSize: 11,
   },
-  actionButton: {
-    width: 32,
-    height: 32,
-    alignItems: 'center',
-    justifyContent: 'center',
+  editButton: {
     alignSelf: 'flex-start',
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
     marginTop: 2,
+    paddingHorizontal: 10,
+    paddingVertical: 8,
+    borderRadius: 999,
+    backgroundColor: 'rgba(255,255,255,0.04)',
+    borderWidth: 1,
+    borderColor: colors.border,
+  },
+  editButtonText: {
+    color: colors.textMuted,
+    fontSize: 12,
+    fontWeight: '700',
   },
 });
