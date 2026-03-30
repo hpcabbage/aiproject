@@ -93,12 +93,12 @@ export const HomeScreen = ({
         <View style={styles.heroFooter}>
           <View style={styles.heroMetric}>
             <Text style={styles.heroMetricValue}>{pendingTodos}</Text>
-            <Text style={styles.heroMetricLabel}>进行中</Text>
+            <Text style={styles.heroMetricLabel}>待完成</Text>
           </View>
           <View style={styles.heroDivider} />
           <View style={styles.heroMetric}>
-            <Text style={styles.heroMetricValue}>{activeHabitItems.length}</Text>
-            <Text style={styles.heroMetricLabel}>待打卡</Text>
+            <Text style={styles.heroMetricValue}>{habitsDoneToday}</Text>
+            <Text style={styles.heroMetricLabel}>已打卡</Text>
           </View>
           <View style={styles.heroDivider} />
           <View style={styles.heroMetric}>
