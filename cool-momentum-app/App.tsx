@@ -576,23 +576,39 @@ export default function App() {
               </View>
 
               {editingTodoId || editingHabitId ? (
-                <TouchableOpacity
-                  style={styles.secondaryButton}
-                  onPress={async () => {
-                    if (editingTodoId && editingTodo) {
-                      await cancelReminder(editingTodo.reminder?.notificationId);
-                      deleteTodo(editingTodoId);
-                    }
-                    if (editingHabitId && editingHabit) {
-                      await cancelReminder(editingHabit.reminder?.notificationId);
-                      deleteHabit(editingHabitId);
-                    }
-                    resetComposer();
-                    setModalVisible(false);
-                  }}
-                >
-                  <Text style={styles.secondaryButtonText}>确认不要了，再删除这条</Text>
-                </TouchableOpacity>
+                confirmingDelete ? (
+                  <View style={styles.confirmDeleteCard}>
+                    <Text style={styles.confirmDeleteTitle}>确认删除这条内容？</Text>
+                    <Text style={styles.confirmDeleteText}>删除后这条内容会立即从面板消失；如果有提醒，也会一起取消。</Text>
+                    <View style={styles.confirmDeleteActions}>
+                      <TouchableOpacity
+                        style={styles.secondaryButton}
+                        onPress={async () => {
+                          if (editingTodoId && editingTodo) {
+                            await cancelReminder(editingTodo.reminder?.notificationId);
+                            deleteTodo(editingTodoId);
+                          }
+                          if (editingHabitId && editingHabit) {
+                            await cancelReminder(editingHabit.reminder?.notificationId);
+                            deleteHabit(editingHabitId);
+                          }
+                          resetComposer();
+                          setModalVisible(false);
+                        }}
+                      >
+                        <Text style={styles.secondaryButtonText}>确认删除</Text>
+                      </TouchableOpacity>
+
+                      <TouchableOpacity style={styles.confirmGhostButton} onPress={() => setConfirmingDelete(false)}>
+                        <Text style={styles.confirmGhostButtonText}>先保留，继续编辑</Text>
+                      </TouchableOpacity>
+                    </View>
+                  </View>
+                ) : (
+                  <TouchableOpacity style={styles.secondaryButtonMuted} onPress={() => setConfirmingDelete(true)}>
+                    <Text style={styles.secondaryButtonMutedText}>删除这条内容</Text>
+                  </TouchableOpacity>
+                )
               ) : null}
             </View>
           </KeyboardAvoidingView>
