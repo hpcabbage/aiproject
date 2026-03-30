@@ -83,6 +83,7 @@ export const HomeScreen = ({
       : '这一类里还没有习惯。';
   const showQuickAddCard = !(selectedCategory === 'All' && todos.length === 0 && habits.length === 0);
   const showCategoryContextCard = selectedCategory !== 'All';
+  const isTrueEmptyState = todos.length === 0 && habits.length === 0;
 
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
@@ -96,19 +97,19 @@ export const HomeScreen = ({
           <ProgressRing value={completionRate} />
         </View>
 
-        <View style={styles.heroFooter}>
+        <View style={[styles.heroFooter, isTrueEmptyState && styles.heroFooterMuted]}>
           <View style={styles.heroMetric}>
-            <Text style={styles.heroMetricValue}>{pendingTodos}</Text>
+            <Text style={[styles.heroMetricValue, isTrueEmptyState && styles.heroMetricValueMuted]}>{pendingTodos}</Text>
             <Text style={styles.heroMetricLabel}>待完成</Text>
           </View>
           <View style={styles.heroDivider} />
           <View style={styles.heroMetric}>
-            <Text style={styles.heroMetricValue}>{habitsDoneToday}</Text>
+            <Text style={[styles.heroMetricValue, isTrueEmptyState && styles.heroMetricValueMuted]}>{habitsDoneToday}</Text>
             <Text style={styles.heroMetricLabel}>已打卡</Text>
           </View>
           <View style={styles.heroDivider} />
           <View style={styles.heroMetric}>
-            <Text style={styles.heroMetricValue}>{reminderCount}</Text>
+            <Text style={[styles.heroMetricValue, isTrueEmptyState && styles.heroMetricValueMuted]}>{reminderCount}</Text>
             <Text style={styles.heroMetricLabel}>提醒中</Text>
           </View>
         </View>
@@ -435,8 +436,14 @@ const styles = StyleSheet.create({
     gap: 12,
     paddingTop: 6,
   },
+  heroFooterMuted: {
+    opacity: 0.72,
+  },
   heroMetric: { flex: 1, gap: 4, alignItems: 'center' },
   heroMetricValue: { color: colors.white, fontSize: 22, fontWeight: '800' },
+  heroMetricValueMuted: {
+    color: 'rgba(255,255,255,0.82)',
+  },
   heroMetricLabel: { color: 'rgba(255,255,255,0.68)', fontSize: 11, fontWeight: '700' },
   heroDivider: { width: 1, alignSelf: 'stretch', backgroundColor: 'rgba(255,255,255,0.12)' },
   instantFeedbackPill: {
