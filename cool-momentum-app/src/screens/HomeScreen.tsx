@@ -90,6 +90,8 @@ export const HomeScreen = ({
   const isTrueEmptyState = todos.length === 0 && habits.length === 0;
   const isLateCompletionState = pendingTodoItems.length === 0 && activeHabitItems.length === 0 && (completedTodoItems.length > 0 || completedHabitItems.length > 0);
   const isFilteredLateCompletionState = selectedCategory !== 'All' && todos.length === 0 && habits.length === 0 && (completedTodoItems.length > 0 || completedHabitItems.length > 0);
+  const heroPrimaryMetricValue = isLateCompletionState ? doneTodos : pendingTodos;
+  const heroPrimaryMetricLabel = isLateCompletionState ? '已完成' : '未完成';
   const showTopFocusEmptyState = todos.length === 0;
   const topFocusEmptySubtitle =
     todos.length === 0 && habits.length > 0
@@ -110,8 +112,8 @@ export const HomeScreen = ({
 
         <View style={[styles.heroFooter, isTrueEmptyState && styles.heroFooterMuted]}>
           <View style={styles.heroMetric}>
-            <Text style={[styles.heroMetricValue, isTrueEmptyState && styles.heroMetricValueMuted]}>{pendingTodos}</Text>
-            <Text style={styles.heroMetricLabel}>未完成</Text>
+            <Text style={[styles.heroMetricValue, isTrueEmptyState && styles.heroMetricValueMuted]}>{heroPrimaryMetricValue}</Text>
+            <Text style={styles.heroMetricLabel}>{heroPrimaryMetricLabel}</Text>
           </View>
           <View style={styles.heroDivider} />
           <View style={styles.heroMetric}>
