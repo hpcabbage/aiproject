@@ -81,6 +81,7 @@ export const HomeScreen = ({
       ? '今天还没有习惯。先放一条值得长期坚持的动作。'
       : `「${categoryLabels[selectedCategory]}」里还没有习惯。`;
   const showQuickAddCard = !(selectedCategory === 'All' && todos.length === 0 && habits.length === 0);
+  const showCategoryContextCard = selectedCategory !== 'All';
 
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
@@ -227,6 +228,18 @@ export const HomeScreen = ({
           );
         })}
       </View>
+
+      {showCategoryContextCard ? (
+        <View style={styles.categoryContextCard}>
+          <View style={styles.categoryContextTextBlock}>
+            <Text style={styles.categoryContextTitle}>当前只看「{categoryLabels[selectedCategory]}」</Text>
+            <Text style={styles.categoryContextSubtitle}>上面的节奏仍是今天的全局视角，下面列表已经切到这个分类里，适合你定点收一类内容。</Text>
+          </View>
+          <TouchableOpacity style={styles.categoryContextAction} onPress={() => onSelectCategory('All')} activeOpacity={0.88}>
+            <Text style={styles.categoryContextActionText}>回到全部</Text>
+          </TouchableOpacity>
+        </View>
+      ) : null}
 
       <View style={styles.section}>
         <SectionTitle title="今日待办" subtitle="今天真正要推进的事。" />
@@ -556,6 +569,30 @@ const styles = StyleSheet.create({
   filterPillActive: { backgroundColor: colors.accent },
   filterText: { color: colors.textMuted, fontWeight: '700', fontSize: 12 },
   filterTextActive: { color: colors.white },
+  categoryContextCard: {
+    paddingHorizontal: 14,
+    paddingVertical: 14,
+    borderRadius: 18,
+    backgroundColor: 'rgba(255,255,255,0.04)',
+    borderWidth: 1,
+    borderColor: colors.border,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    gap: 12,
+  },
+  categoryContextTextBlock: { flex: 1, gap: 4 },
+  categoryContextTitle: { color: colors.text, fontSize: 14, fontWeight: '800' },
+  categoryContextSubtitle: { color: colors.textMuted, fontSize: 12, lineHeight: 18 },
+  categoryContextAction: {
+    paddingHorizontal: 12,
+    paddingVertical: 9,
+    borderRadius: 999,
+    backgroundColor: 'rgba(124, 92, 255, 0.16)',
+    borderWidth: 1,
+    borderColor: 'rgba(124, 92, 255, 0.24)',
+  },
+  categoryContextActionText: { color: colors.accentSecondary, fontSize: 12, fontWeight: '800' },
   section: { gap: 10 },
   list: { gap: 12 },
   todoGroup: {
