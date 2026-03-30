@@ -316,7 +316,13 @@ export const HomeScreen = ({
               ) : null}
             </>
           ) : (
-            <Text style={styles.emptyText}>{emptyTodoText}</Text>
+            <View style={styles.emptyStateCard}>
+              <Text style={styles.emptyText}>{emptyTodoText}</Text>
+              <TouchableOpacity style={styles.emptyStateAction} onPress={onAddPress} activeOpacity={0.88}>
+                <Ionicons name="add-circle-outline" size={16} color={colors.white} />
+                <Text style={styles.emptyStateActionText}>添加一条待办</Text>
+              </TouchableOpacity>
+            </View>
           )}
         </View>
       </View>
@@ -367,7 +373,13 @@ export const HomeScreen = ({
               ) : null}
             </>
           ) : (
-            <Text style={styles.emptyText}>{emptyHabitText}</Text>
+            <View style={styles.emptyStateCard}>
+              <Text style={styles.emptyText}>{emptyHabitText}</Text>
+              <TouchableOpacity style={styles.emptyStateAction} onPress={onAddPress} activeOpacity={0.88}>
+                <Ionicons name="add-circle-outline" size={16} color={colors.white} />
+                <Text style={styles.emptyStateActionText}>添加一条习惯</Text>
+              </TouchableOpacity>
+            </View>
           )}
         </View>
       </View>
@@ -722,11 +734,31 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     backgroundColor: colors.accent,
   },
+  emptyStateCard: {
+    gap: 12,
+    paddingVertical: 8,
+  },
+  emptyStateAction: {
+    alignSelf: 'flex-start',
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    paddingHorizontal: 12,
+    paddingVertical: 10,
+    borderRadius: 999,
+    backgroundColor: 'rgba(124, 92, 255, 0.18)',
+    borderWidth: 1,
+    borderColor: 'rgba(124, 92, 255, 0.26)',
+  },
+  emptyStateActionText: {
+    color: colors.white,
+    fontSize: 13,
+    fontWeight: '800',
+  },
   emptyText: {
     color: colors.textMuted,
     fontSize: 14,
     lineHeight: 22,
-    paddingVertical: 14,
     paddingHorizontal: 4,
   },
 });
