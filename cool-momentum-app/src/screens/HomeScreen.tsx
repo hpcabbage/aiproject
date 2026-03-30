@@ -90,6 +90,7 @@ export const HomeScreen = ({
   const isTrueEmptyState = todos.length === 0 && habits.length === 0;
   const isLateCompletionState = pendingTodoItems.length === 0 && activeHabitItems.length === 0 && (completedTodoItems.length > 0 || completedHabitItems.length > 0);
   const isFilteredLateCompletionState = selectedCategory !== 'All' && todos.length === 0 && habits.length === 0 && (completedTodoItems.length > 0 || completedHabitItems.length > 0);
+  const isAllLateQuickAddState = selectedCategory === 'All' && isLateCompletionState;
   const isFilteredLateQuickAddState = selectedCategory !== 'All' && isLateCompletionState;
   const heroPrimaryMetricValue = isLateCompletionState ? doneTodos : pendingTodos;
   const heroPrimaryMetricLabel = isLateCompletionState ? '已完成' : '未完成';
@@ -241,13 +242,28 @@ export const HomeScreen = ({
       ) : null}
 
       {showQuickAddCard ? (
-        <GlassCard style={[styles.quickCard, isLateCompletionState && styles.quickCardMuted, isFilteredLateQuickAddState && styles.quickCardMutedStrong]}>
+        <GlassCard
+          style={[
+            styles.quickCard,
+            isLateCompletionState && styles.quickCardMuted,
+            isAllLateQuickAddState && styles.quickCardMutedStrong,
+            isFilteredLateQuickAddState && styles.quickCardMutedStrong,
+          ]}
+        >
           <View style={styles.quickCardInner}>
             <View>
               <Text style={styles.quickTitle}>新增内容</Text>
               <Text style={styles.quickSubtitle}>把新的待办或习惯放进面板，今天的节奏就会继续往前走。</Text>
             </View>
-            <TouchableOpacity style={[styles.addButton, isLateCompletionState && styles.addButtonMuted, isFilteredLateQuickAddState && styles.addButtonMutedStrong]} onPress={onAddPress}>
+            <TouchableOpacity
+              style={[
+                styles.addButton,
+                isLateCompletionState && styles.addButtonMuted,
+                isAllLateQuickAddState && styles.addButtonMutedStrong,
+                isFilteredLateQuickAddState && styles.addButtonMutedStrong,
+              ]}
+              onPress={onAddPress}
+            >
               <Ionicons name="add" size={22} color={colors.white} />
             </TouchableOpacity>
           </View>
