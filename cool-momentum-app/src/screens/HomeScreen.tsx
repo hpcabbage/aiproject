@@ -321,7 +321,7 @@ export const HomeScreen = ({
         </View>
       </View>
 
-      <View style={styles.section}>
+      <View style={[styles.section, styles.habitSection]}>
         <SectionTitle title="习惯" subtitle="每天点亮，长期复利。" />
         <View style={styles.list}>
           {habits.length ? (
@@ -623,6 +623,7 @@ const styles = StyleSheet.create({
   },
   categoryContextActionText: { color: colors.accentSecondary, fontSize: 12, fontWeight: '800' },
   section: { gap: 10 },
+  habitSection: { marginTop: 6 },
   list: { gap: 12 },
   todoGroup: {
     gap: 12,
