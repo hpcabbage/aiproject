@@ -219,6 +219,20 @@ export const HomeScreen = ({
         </GlassCard>
       )}
 
+      {showQuickAddCard ? (
+        <GlassCard style={styles.quickCard}>
+          <View style={styles.quickCardInner}>
+            <View>
+              <Text style={styles.quickTitle}>新增内容</Text>
+              <Text style={styles.quickSubtitle}>把新的待办或习惯放进面板，今天的节奏就会继续往前走。</Text>
+            </View>
+            <TouchableOpacity style={styles.addButton} onPress={onAddPress}>
+              <Ionicons name="add" size={22} color={colors.white} />
+            </TouchableOpacity>
+          </View>
+        </GlassCard>
+      ) : null}
+
       <View style={styles.section}>
         <SectionTitle title="今日待办" subtitle="今天真正要推进的事。" />
 
@@ -306,20 +320,6 @@ export const HomeScreen = ({
           )}
         </View>
       </View>
-
-      {showQuickAddCard ? (
-        <GlassCard style={styles.quickCard}>
-          <View style={styles.quickCardInner}>
-            <View>
-              <Text style={styles.quickTitle}>新增内容</Text>
-              <Text style={styles.quickSubtitle}>把新的待办或习惯放进面板，今天的节奏就会继续往前走。</Text>
-            </View>
-            <TouchableOpacity style={styles.addButton} onPress={onAddPress}>
-              <Ionicons name="add" size={22} color={colors.white} />
-            </TouchableOpacity>
-          </View>
-        </GlassCard>
-      ) : null}
 
       <View style={styles.section}>
         <SectionTitle title="习惯" subtitle="每天点亮，长期复利。" />
