@@ -49,6 +49,8 @@ export const StatsScreen = ({ habits, todos, completionRate, bestStreak, totalDo
   const averagePerDay = trendTotal / trendData.length;
   const bestDay = trendData.reduce((best, current) => (current.total > best.total ? current : best), trendData[0]);
 
+  const todayDoneTodos = todos.filter((todo) => todo.done).length;
+  const todayDoneHabits = habits.filter((habit) => habit.completions.includes(getTodayKey())).length;
   const highPriorityTotal = todos.filter((todo) => todo.priority === 'High').length;
   const highPriorityDone = todos.filter((todo) => todo.priority === 'High' && todo.done).length;
   const highPriorityRate = highPriorityTotal === 0 ? 0 : (highPriorityDone / highPriorityTotal) * 100;
@@ -122,6 +124,19 @@ export const StatsScreen = ({ habits, todos, completionRate, bestStreak, totalDo
               <Ionicons name={totalDone > 0 ? 'sparkles' : 'hourglass-outline'} size={16} color={colors.white} />
             </View>
           </View>
+
+          {totalDone > 0 ? (
+            <View style={styles.todayBreakdownRow}>
+              <View style={styles.todayBreakdownChip}>
+                <Text style={styles.todayBreakdownLabel}>待办完成</Text>
+                <Text style={styles.todayBreakdownValue}>{todayDoneTodos}</Text>
+              </View>
+              <View style={styles.todayBreakdownChip}>
+                <Text style={styles.todayBreakdownLabel}>习惯打卡</Text>
+                <Text style={styles.todayBreakdownValue}>{todayDoneHabits}</Text>
+              </View>
+            </View>
+          ) : null}
         </View>
       </GlassCard>
 
@@ -358,6 +373,31 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     backgroundColor: 'rgba(255,255,255,0.14)',
+  },
+  todayBreakdownRow: {
+    flexDirection: 'row',
+    gap: 10,
+  },
+  todayBreakdownChip: {
+    flex: 1,
+    minWidth: 0,
+    paddingHorizontal: 14,
+    paddingVertical: 12,
+    borderRadius: 16,
+    backgroundColor: 'rgba(255,255,255,0.05)',
+    borderWidth: 1,
+    borderColor: colors.border,
+    gap: 4,
+  },
+  todayBreakdownLabel: {
+    color: colors.textMuted,
+    fontSize: 11,
+    fontWeight: '700',
+  },
+  todayBreakdownValue: {
+    color: colors.text,
+    fontSize: 18,
+    fontWeight: '800',
   },
   trendInner: { padding: 16, gap: 12 },
   trendHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start', gap: 12, flexWrap: 'wrap' },
