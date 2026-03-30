@@ -88,6 +88,7 @@ export const HomeScreen = ({
   const showQuickAddCard = !(selectedCategory === 'All' && todos.length === 0 && habits.length === 0);
   const showCategoryContextCard = selectedCategory !== 'All';
   const isTrueEmptyState = todos.length === 0 && habits.length === 0;
+  const showTopFocusEmptyState = todos.length === 0;
   const topFocusEmptySubtitle =
     todos.length === 0 && habits.length > 0
       ? '习惯区已经可以继续打卡，再补一条今日待办，首页节奏会更完整。'
@@ -214,7 +215,7 @@ export const HomeScreen = ({
             </View>
           </View>
         </GlassCard>
-      ) : (
+      ) : showTopFocusEmptyState ? (
         <GlassCard style={styles.topFocusCard}>
           <View style={styles.emptyTopFocusCard}>
             <View style={styles.emptyTopFocusHeader}>
@@ -232,7 +233,7 @@ export const HomeScreen = ({
             </TouchableOpacity>
           </View>
         </GlassCard>
-      )}
+      ) : null}
 
       {showQuickAddCard ? (
         <GlassCard style={styles.quickCard}>
