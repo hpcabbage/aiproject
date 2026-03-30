@@ -101,6 +101,7 @@ export default function App() {
 
     return getReminderNextTriggerHint(reminderTime);
   }, [reminderEnabled, reminderTime]);
+  const submitDisabled = !draftValue.trim() || (reminderEnabled && !isReminderTimeValid(reminderTime));
 
   useEffect(() => {
     configureNotifications();
@@ -528,8 +529,10 @@ export default function App() {
               </View>
 
               <View style={styles.primaryActionsBlock}>
-                <TouchableOpacity style={styles.submitButton} onPress={handleSubmit}>
-                  <Text style={styles.submitText}>{editingTodo || editingHabit ? '保存修改' : draftMode === 'todo' ? '加入今日待办' : '加入习惯面板'}</Text>
+                <TouchableOpacity style={[styles.submitButton, submitDisabled && styles.submitButtonDisabled]} onPress={handleSubmit} disabled={submitDisabled}>
+                  <Text style={[styles.submitText, submitDisabled && styles.submitTextDisabled]}>
+                    {editingTodo || editingHabit ? '保存修改' : draftMode === 'todo' ? '加入今日待办' : '加入习惯面板'}
+                  </Text>
                 </TouchableOpacity>
 
                 <TouchableOpacity
@@ -822,7 +825,13 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     backgroundColor: colors.accentSecondary,
   },
+  submitButtonDisabled: {
+    opacity: 0.45,
+  },
   submitText: { color: '#05101A', fontSize: 16, fontWeight: '800' },
+  submitTextDisabled: {
+    color: 'rgba(5,16,26,0.7)',
+  },
   ghostButton: {
     minHeight: 48,
     borderRadius: 16,
