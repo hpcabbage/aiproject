@@ -13,6 +13,10 @@ export const getFocusMessage = (todos: TodoItem[], habits: Habit[]) => {
     return '待办已经清空，可以把精力切去长期习惯。';
   }
 
+  if (habits.length === 0) {
+    return '待办已经排上了，再补一条习惯，今天的节奏会更完整。';
+  }
+
   const focusTodo = pending[0];
   return `先狠狠干掉「${focusTodo.title}」，这是你现在最该推进的一项。`;
 };
