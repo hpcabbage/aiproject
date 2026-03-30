@@ -88,6 +88,7 @@ export const HomeScreen = ({
   const showQuickAddCard = !(selectedCategory === 'All' && todos.length === 0 && habits.length === 0);
   const showCategoryContextCard = selectedCategory !== 'All';
   const isTrueEmptyState = todos.length === 0 && habits.length === 0;
+  const isLateCompletionState = pendingTodoItems.length === 0 && activeHabitItems.length === 0 && (completedTodoItems.length > 0 || completedHabitItems.length > 0);
   const showTopFocusEmptyState = todos.length === 0;
   const topFocusEmptySubtitle =
     todos.length === 0 && habits.length > 0
@@ -236,13 +237,13 @@ export const HomeScreen = ({
       ) : null}
 
       {showQuickAddCard ? (
-        <GlassCard style={styles.quickCard}>
+        <GlassCard style={[styles.quickCard, isLateCompletionState && styles.quickCardMuted]}>
           <View style={styles.quickCardInner}>
             <View>
               <Text style={styles.quickTitle}>新增内容</Text>
               <Text style={styles.quickSubtitle}>把新的待办或习惯放进面板，今天的节奏就会继续往前走。</Text>
             </View>
-            <TouchableOpacity style={styles.addButton} onPress={onAddPress}>
+            <TouchableOpacity style={[styles.addButton, isLateCompletionState && styles.addButtonMuted]} onPress={onAddPress}>
               <Ionicons name="add" size={22} color={colors.white} />
             </TouchableOpacity>
           </View>
@@ -739,6 +740,9 @@ const styles = StyleSheet.create({
     opacity: 0.96,
   },
   quickCard: { marginTop: -4 },
+  quickCardMuted: {
+    opacity: 0.82,
+  },
   quickCardInner: {
     paddingHorizontal: 18,
     paddingVertical: 16,
@@ -755,6 +759,10 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     backgroundColor: colors.accent,
+  },
+  addButtonMuted: {
+    opacity: 0.88,
+    transform: [{ scale: 0.94 }],
   },
   emptyStateCard: {
     gap: 12,
