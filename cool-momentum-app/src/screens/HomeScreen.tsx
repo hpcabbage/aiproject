@@ -141,9 +141,9 @@ export const HomeScreen = ({
               <Text style={styles.pulseMetricMeta}>优先把这个节奏里的关键项收掉。</Text>
             </View>
             <View style={styles.pulseMetricCard}>
-              <Text style={styles.pulseMetricLabel}>今日进度</Text>
-              <Text style={styles.pulseMetricValue}>{Math.round(completionRate)}%</Text>
-              <Text style={styles.pulseMetricMeta}>已完成 {totalDone} 项动作</Text>
+              <Text style={styles.pulseMetricLabel}>结果回顾</Text>
+              <Text style={styles.pulseMetricValue}>{totalDone} 项</Text>
+              <Text style={styles.pulseMetricMeta}>当前完成率 {Math.round(completionRate)}%，结果已经开始积累。</Text>
             </View>
           </View>
 
