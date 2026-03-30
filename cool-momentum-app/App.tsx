@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import {
   KeyboardAvoidingView,
   Modal,
@@ -64,6 +64,7 @@ export default function App() {
   const [confirmingDelete, setConfirmingDelete] = useState(false);
   const [testReminderStatus, setTestReminderStatus] = useState<string | null>(null);
   const [testReminderPending, setTestReminderPending] = useState(false);
+  const bodyScrollRef = useRef<ScrollView | null>(null);
 
   const placeholder = useMemo(
     () => (draftMode === 'todo' ? '比如：把产品首页原型做完' : '比如：晨间复盘 10 分钟'),
@@ -129,6 +130,31 @@ export default function App() {
     setConfirmingDelete(false);
     setTestReminderStatus(null);
     setTestReminderPending(false);
+  };
+
+  const scrollBodyToTop = () => {
+    bodyScrollRef.current?.scrollTo({ y: 0, animated: true });
+  };
+
+  const handleHomeTabPress = () => {
+    if (activeTab === 'home') {
+      setSelectedCategory('All');
+      scrollBodyToTop();
+      return;
+    }
+
+    setActiveTab('home');
+    scrollBodyToTop();
+  };
+
+  const handleStatsTabPress = () => {
+    if (activeTab === 'stats') {
+      scrollBodyToTop();
+      return;
+    }
+
+    setActiveTab('stats');
+    scrollBodyToTop();
   };
 
   const openCreateModal = () => {
@@ -267,7 +293,7 @@ export default function App() {
           </View>
 
           {ready ? (
-            <ScrollView style={styles.body} contentContainerStyle={styles.bodyContent} showsVerticalScrollIndicator={false}>
+            <ScrollView ref={bodyScrollRef} style={styles.body} contentContainerStyle={styles.bodyContent} showsVerticalScrollIndicator={false}>
               {activeTab === 'home' ? (
                 <HomeScreen
                   todos={filteredTodos}
@@ -379,11 +405,11 @@ export default function App() {
           )}
 
           <View style={styles.tabBar}>
-            <Pressable style={[styles.tab, activeTab === 'home' && styles.tabActive]} onPress={() => setActiveTab('home')}>
+            <Pressable style={[styles.tab, activeTab === 'home' && styles.tabActive]} onPress={handleHomeTabPress}>
               <Ionicons name="grid" size={18} color={activeTab === 'home' ? colors.white : colors.textMuted} />
               <Text style={[styles.tabLabel, activeTab === 'home' && styles.tabLabelActive]}>主页</Text>
             </Pressable>
-            <Pressable style={[styles.tab, activeTab === 'stats' && styles.tabActive]} onPress={() => setActiveTab('stats')}>
+            <Pressable style={[styles.tab, activeTab === 'stats' && styles.tabActive]} onPress={handleStatsTabPress}>
               <Ionicons name="bar-chart" size={16} color={activeTab === 'stats' ? colors.white : colors.textMuted} />
               <Text style={[styles.tabLabel, activeTab === 'stats' && styles.tabLabelActive]}>统计</Text>
             </Pressable>
