@@ -75,6 +75,13 @@ export const StatsScreen = ({ habits, todos, completionRate, bestStreak, totalDo
     topDoneCategory && topDoneCategory.done > 0
       ? `今天推进最多的是「${categoryLabels[topDoneCategory.key]}」，说明你的注意力正在向这里集中。`
       : `当前最重的内容还是「${topCategory}」，等你开始完成动作后，这里会更有参考价值。`;
+  const todayFeedbackTitle = totalDone > 0 ? `今天已经拿下 ${totalDone} 项动作` : '结果会在你开始行动后出现';
+  const todayFeedbackSubtitle =
+    totalDone > 0
+      ? topDoneCategory && topDoneCategory.done > 0
+        ? `其中最有推进感的是「${categoryLabels[topDoneCategory.key]}」：已经完成 ${topDoneCategory.done} 项。`
+        : '你已经把今天的节奏推起来了，接下来可以继续扩大成果。'
+      : '先完成一条待办或点亮一次习惯，这里就会开始给你明确反馈。';
 
   return (
     <View style={styles.wrapper}>
@@ -103,6 +110,16 @@ export const StatsScreen = ({ habits, todos, completionRate, bestStreak, totalDo
               <Text style={styles.heroMetricValueSmall}>{topCategory}</Text>
               <Text style={styles.heroMetricLabel}>当前主战场</Text>
               <Text style={styles.heroMetricMeta}>现在最重的节奏落在这里</Text>
+            </View>
+          </View>
+
+          <View style={styles.todayFeedbackCard}>
+            <View style={styles.todayFeedbackTextBlock}>
+              <Text style={styles.todayFeedbackTitle}>{todayFeedbackTitle}</Text>
+              <Text style={styles.todayFeedbackSubtitle}>{todayFeedbackSubtitle}</Text>
+            </View>
+            <View style={styles.todayFeedbackBadge}>
+              <Ionicons name={totalDone > 0 ? 'sparkles' : 'hourglass-outline'} size={16} color={colors.white} />
             </View>
           </View>
         </View>
@@ -319,6 +336,29 @@ const styles = StyleSheet.create({
   heroMetricValueSmall: { color: colors.text, fontSize: 18, fontWeight: '800' },
   heroMetricLabel: { color: colors.textMuted, fontSize: 11, fontWeight: '700' },
   heroMetricMeta: { color: colors.textMuted, fontSize: 12, lineHeight: 18 },
+  todayFeedbackCard: {
+    borderRadius: 18,
+    paddingHorizontal: 14,
+    paddingVertical: 14,
+    backgroundColor: 'rgba(124, 92, 255, 0.14)',
+    borderWidth: 1,
+    borderColor: 'rgba(124, 92, 255, 0.24)',
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    gap: 12,
+  },
+  todayFeedbackTextBlock: { flex: 1, gap: 4 },
+  todayFeedbackTitle: { color: colors.white, fontSize: 15, fontWeight: '800' },
+  todayFeedbackSubtitle: { color: 'rgba(255,255,255,0.76)', fontSize: 12, lineHeight: 18 },
+  todayFeedbackBadge: {
+    width: 34,
+    height: 34,
+    borderRadius: 17,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: 'rgba(255,255,255,0.14)',
+  },
   trendInner: { padding: 16, gap: 12 },
   trendHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start', gap: 12, flexWrap: 'wrap' },
   trendHeaderCompact: { alignItems: 'stretch' },

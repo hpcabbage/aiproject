@@ -16,12 +16,14 @@ type Props = {
   topTodos: TodoItem[];
   habits: Habit[];
   completionRate: number;
+  totalDone: number;
   selectedCategory: Category | 'All';
   categories: (Category | 'All')[];
   focusMessage: string;
   topCategory: string;
   onSelectCategory: (value: Category | 'All') => void;
   onAddPress: () => void;
+  onOpenStats: () => void;
   onToggleTodo: (id: string) => void;
   onDeleteTodo: (id: string) => void;
   onEditTodo: (id: string) => void;
@@ -34,12 +36,14 @@ export const HomeScreen = ({
   topTodos,
   habits,
   completionRate,
+  totalDone,
   selectedCategory,
   categories,
   focusMessage,
   topCategory,
   onSelectCategory,
   onAddPress,
+  onOpenStats,
   onToggleTodo,
   onDeleteTodo,
   onEditTodo,
@@ -124,9 +128,19 @@ export const HomeScreen = ({
             <View style={styles.pulseMetricCard}>
               <Text style={styles.pulseMetricLabel}>今日进度</Text>
               <Text style={styles.pulseMetricValue}>{Math.round(completionRate)}%</Text>
-              <Text style={styles.pulseMetricMeta}>已完成 {doneTodos + habitsDoneToday} 项动作</Text>
+              <Text style={styles.pulseMetricMeta}>已完成 {totalDone} 项动作</Text>
             </View>
           </View>
+
+          {totalDone > 0 ? (
+            <TouchableOpacity style={styles.statsNudgeCard} onPress={onOpenStats} activeOpacity={0.88}>
+              <View style={styles.statsNudgeTextBlock}>
+                <Text style={styles.statsNudgeTitle}>去统计页看反馈</Text>
+                <Text style={styles.statsNudgeSubtitle}>你今天已经完成了 {totalDone} 项动作，结果页现在更有参考价值。</Text>
+              </View>
+              <Ionicons name="arrow-forward" size={18} color={colors.white} />
+            </TouchableOpacity>
+          ) : null}
         </View>
       </GlassCard>
 
@@ -392,6 +406,22 @@ const styles = StyleSheet.create({
   pulseSubtitle: { color: colors.textMuted, fontSize: 12, lineHeight: 18 },
   pulseMetricsRow: { flexDirection: 'row', gap: 10 },
   pulseMetricsRowCompact: { flexDirection: 'column' },
+  statsNudgeCard: {
+    marginTop: 2,
+    paddingHorizontal: 14,
+    paddingVertical: 14,
+    borderRadius: 18,
+    backgroundColor: 'rgba(124, 92, 255, 0.16)',
+    borderWidth: 1,
+    borderColor: 'rgba(124, 92, 255, 0.24)',
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    gap: 12,
+  },
+  statsNudgeTextBlock: { flex: 1, gap: 4 },
+  statsNudgeTitle: { color: colors.white, fontSize: 14, fontWeight: '800' },
+  statsNudgeSubtitle: { color: 'rgba(255,255,255,0.74)', fontSize: 12, lineHeight: 18 },
   pulseMetricCard: {
     flex: 1,
     gap: 6,

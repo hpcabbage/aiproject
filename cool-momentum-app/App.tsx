@@ -211,6 +211,7 @@ export default function App() {
 
     resetComposer();
     setModalVisible(false);
+    setActiveTab('home');
   };
 
   const handleTestReminder = async () => {
@@ -271,12 +272,14 @@ export default function App() {
                   topTodos={topTodos}
                   habits={filteredHabits}
                   completionRate={stats.completionRate}
+                  totalDone={stats.totalDone}
                   selectedCategory={selectedCategory}
                   categories={['All', ...categories]}
                   focusMessage={focusMessage}
                   topCategory={topCategory}
                   onSelectCategory={setSelectedCategory}
                   onAddPress={openCreateModal}
+                  onOpenStats={() => setActiveTab('stats')}
                   onToggleTodo={async (id) => {
                     const current = state.todos.find((todo) => todo.id === id);
                     if (current && !current.done && current.reminder?.notificationId) {
