@@ -102,6 +102,7 @@ export default function App() {
     return getReminderNextTriggerHint(reminderTime);
   }, [reminderEnabled, reminderTime]);
   const submitDisabled = !draftValue.trim() || (reminderEnabled && !isReminderTimeValid(reminderTime));
+  const testReminderDisabled = testReminderPending || !reminderEnabled || !isReminderTimeValid(reminderTime);
 
   useEffect(() => {
     configureNotifications();
@@ -518,11 +519,13 @@ export default function App() {
                 <Text style={styles.reminderHint}>{reminderHint}</Text>
 
                 <TouchableOpacity
-                  style={[styles.testReminderButton, testReminderPending && styles.testReminderButtonDisabled]}
+                  style={[styles.testReminderButton, testReminderDisabled && styles.testReminderButtonDisabled]}
                   onPress={handleTestReminder}
-                  disabled={testReminderPending}
+                  disabled={testReminderDisabled}
                 >
-                  <Text style={styles.testReminderButtonText}>{testReminderPending ? '正在排测试提醒…' : '立即测试提醒（5 秒）'}</Text>
+                  <Text style={[styles.testReminderButtonText, testReminderDisabled && styles.testReminderButtonTextDisabled]}>
+                    {testReminderPending ? '正在排测试提醒…' : '立即测试提醒（5 秒）'}
+                  </Text>
                 </TouchableOpacity>
 
                 {testReminderStatus ? <Text style={styles.testReminderStatus}>{testReminderStatus}</Text> : null}
@@ -803,12 +806,15 @@ const styles = StyleSheet.create({
     borderColor: 'rgba(124, 92, 255, 0.28)',
   },
   testReminderButtonDisabled: {
-    opacity: 0.6,
+    opacity: 0.45,
   },
   testReminderButtonText: {
     color: colors.accentSecondary,
     fontSize: 14,
     fontWeight: '800',
+  },
+  testReminderButtonTextDisabled: {
+    color: 'rgba(124, 92, 255, 0.72)',
   },
   testReminderStatus: {
     color: colors.textMuted,
