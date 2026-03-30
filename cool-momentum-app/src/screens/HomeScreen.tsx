@@ -267,7 +267,7 @@ export const HomeScreen = ({
           <View style={styles.categoryContextCard}>
             <View style={styles.categoryContextTextBlock}>
               <Text style={styles.categoryContextTitle}>当前只看「{categoryLabels[selectedCategory]}」</Text>
-              <Text style={styles.categoryContextSubtitle}>上面的节奏仍是今天的全局视角，下面列表已经切到这个分类里，适合你定点收一类内容。</Text>
+              <Text style={styles.categoryContextSubtitle}>下面已经切到这个分类里，适合你顺手把这一类集中收掉。</Text>
             </View>
             <TouchableOpacity style={styles.categoryContextAction} onPress={() => onSelectCategory('All')} activeOpacity={0.88}>
               <Text style={styles.categoryContextActionText}>回到全部</Text>
