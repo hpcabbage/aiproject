@@ -80,6 +80,7 @@ export const HomeScreen = ({
     selectedCategory === 'All'
       ? '今天还没有习惯。先放一条值得长期坚持的动作。'
       : `「${categoryLabels[selectedCategory]}」里还没有习惯。`;
+  const showQuickAddCard = !(selectedCategory === 'All' && todos.length === 0 && habits.length === 0);
 
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
@@ -290,17 +291,19 @@ export const HomeScreen = ({
         </View>
       </View>
 
-      <GlassCard style={styles.quickCard}>
-        <View style={styles.quickCardInner}>
-          <View>
-            <Text style={styles.quickTitle}>新增内容</Text>
-            <Text style={styles.quickSubtitle}>把新的待办或习惯放进面板，今天的节奏就会继续往前走。</Text>
+      {showQuickAddCard ? (
+        <GlassCard style={styles.quickCard}>
+          <View style={styles.quickCardInner}>
+            <View>
+              <Text style={styles.quickTitle}>新增内容</Text>
+              <Text style={styles.quickSubtitle}>把新的待办或习惯放进面板，今天的节奏就会继续往前走。</Text>
+            </View>
+            <TouchableOpacity style={styles.addButton} onPress={onAddPress}>
+              <Ionicons name="add" size={22} color={colors.white} />
+            </TouchableOpacity>
           </View>
-          <TouchableOpacity style={styles.addButton} onPress={onAddPress}>
-            <Ionicons name="add" size={22} color={colors.white} />
-          </TouchableOpacity>
-        </View>
-      </GlassCard>
+        </GlassCard>
+      ) : null}
 
       <View style={styles.section}>
         <SectionTitle title="习惯" subtitle="每天点亮，长期复利。" />
