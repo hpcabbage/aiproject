@@ -64,6 +64,7 @@ export default function App() {
   const [confirmingDelete, setConfirmingDelete] = useState(false);
   const [testReminderStatus, setTestReminderStatus] = useState<string | null>(null);
   const [testReminderPending, setTestReminderPending] = useState(false);
+  const [actionFeedback, setActionFeedback] = useState<string | null>(null);
   const bodyScrollRef = useRef<ScrollView | null>(null);
 
   const placeholder = useMemo(
@@ -108,6 +109,15 @@ export default function App() {
   useEffect(() => {
     configureNotifications();
   }, []);
+
+  useEffect(() => {
+    if (!actionFeedback) {
+      return;
+    }
+
+    const timer = setTimeout(() => setActionFeedback(null), 2200);
+    return () => clearTimeout(timer);
+  }, [actionFeedback]);
   const categorySummary = useMemo(
     () => ({
       Focus: state.todos.filter((item) => item.category === 'Focus').length + state.habits.filter((item) => item.category === 'Focus').length,
@@ -229,12 +239,15 @@ export default function App() {
     if (editingTodoId && editingTodo) {
       const reminder = await syncReminder({ title: trimmed, reminder: editingTodo.reminder }, nextReminder, 'todo');
       updateTodo(editingTodoId, { title: trimmed, category: draftCategory, priority: draftPriority, reminder });
+      setActionFeedback('已保存这条待办');
     } else if (editingHabitId && editingHabit) {
       const reminder = await syncReminder({ title: trimmed, reminder: editingHabit.reminder }, nextReminder, 'habit');
       updateHabit(editingHabitId, { name: trimmed, category: draftCategory, reminder });
+      setActionFeedback('已保存这条习惯');
     } else {
       const reminder = await syncReminder({ title: trimmed }, nextReminder, draftMode);
       addItem(draftMode, trimmed, draftCategory, draftPriority, reminder);
+      setActionFeedback(draftMode === 'todo' ? '已加入今日待办' : '已加入习惯面板');
     }
 
     resetComposer();
@@ -291,6 +304,13 @@ export default function App() {
               <Ionicons name="sparkles" size={18} color={colors.white} />
             </TouchableOpacity>
           </View>
+
+          {actionFeedback ? (
+            <View style={styles.actionFeedbackBanner}>
+              <Ionicons name="checkmark-circle" size={16} color={colors.success} />
+              <Text style={styles.actionFeedbackText}>{actionFeedback}</Text>
+            </View>
+          ) : null}
 
           {ready ? (
             <ScrollView ref={bodyScrollRef} style={styles.body} contentContainerStyle={styles.bodyContent} showsVerticalScrollIndicator={false}>
@@ -587,10 +607,12 @@ export default function App() {
                           if (editingTodoId && editingTodo) {
                             await cancelReminder(editingTodo.reminder?.notificationId);
                             deleteTodo(editingTodoId);
+                            setActionFeedback('已删除这条待办');
                           }
                           if (editingHabitId && editingHabit) {
                             await cancelReminder(editingHabit.reminder?.notificationId);
                             deleteHabit(editingHabitId);
+                            setActionFeedback('已删除这条习惯');
                           }
                           resetComposer();
                           setModalVisible(false);
@@ -646,6 +668,24 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(124, 92, 255, 0.7)',
     borderWidth: 1,
     borderColor: colors.border,
+  },
+  actionFeedbackBanner: {
+    marginHorizontal: 20,
+    marginBottom: 10,
+    minHeight: 42,
+    borderRadius: 14,
+    paddingHorizontal: 14,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    backgroundColor: 'rgba(49, 208, 170, 0.12)',
+    borderWidth: 1,
+    borderColor: 'rgba(49, 208, 170, 0.22)',
+  },
+  actionFeedbackText: {
+    color: colors.text,
+    fontSize: 13,
+    fontWeight: '700',
   },
   body: { flex: 1 },
   bodyContent: { paddingBottom: 204 },
