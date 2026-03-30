@@ -155,7 +155,7 @@ export const HomeScreen = ({
       </GlassCard>
 
       {topTodos.length ? (
-        <GlassCard>
+        <GlassCard style={styles.topFocusCard}>
           <View style={styles.topFocusInner}>
             <View style={styles.topFocusHeader}>
               <View>
@@ -200,7 +200,7 @@ export const HomeScreen = ({
           </View>
         </GlassCard>
       ) : (
-        <GlassCard>
+        <GlassCard style={styles.topFocusCard}>
           <View style={styles.emptyTopFocusCard}>
             <View style={styles.emptyTopFocusHeader}>
               <View style={styles.emptyTopFocusBadge}>
@@ -485,6 +485,9 @@ const styles = StyleSheet.create({
   pulseMetricLabel: { color: colors.textMuted, fontSize: 11, fontWeight: '700' },
   pulseMetricValue: { color: colors.text, fontSize: 18, fontWeight: '800' },
   pulseMetricMeta: { color: colors.textMuted, fontSize: 12, lineHeight: 18 },
+  topFocusCard: {
+    marginTop: -2,
+  },
   topFocusInner: { paddingHorizontal: 16, paddingVertical: 16, gap: 10 },
   topFocusHeader: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 12 },
   topFocusTitle: { color: colors.text, fontSize: 20, fontWeight: '800' },
