@@ -97,8 +97,8 @@ export const HomeScreen = ({
           </View>
           <View style={styles.heroDivider} />
           <View style={styles.heroMetric}>
-            <Text style={styles.heroMetricValue}>{habitsDoneToday}</Text>
-            <Text style={styles.heroMetricLabel}>已打卡</Text>
+            <Text style={styles.heroMetricValue}>{activeHabitItems.length}</Text>
+            <Text style={styles.heroMetricLabel}>待打卡</Text>
           </View>
           <View style={styles.heroDivider} />
           <View style={styles.heroMetric}>
