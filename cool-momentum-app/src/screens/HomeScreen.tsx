@@ -89,6 +89,7 @@ export const HomeScreen = ({
   const showCategoryContextCard = selectedCategory !== 'All';
   const isTrueEmptyState = todos.length === 0 && habits.length === 0;
   const isLateCompletionState = pendingTodoItems.length === 0 && activeHabitItems.length === 0 && (completedTodoItems.length > 0 || completedHabitItems.length > 0);
+  const isFilteredLateCompletionState = selectedCategory !== 'All' && todos.length === 0 && habits.length === 0 && (completedTodoItems.length > 0 || completedHabitItems.length > 0);
   const showTopFocusEmptyState = todos.length === 0;
   const topFocusEmptySubtitle =
     todos.length === 0 && habits.length > 0
@@ -269,7 +270,11 @@ export const HomeScreen = ({
           <View style={styles.categoryContextCard}>
             <View style={styles.categoryContextTextBlock}>
               <Text style={styles.categoryContextTitle}>当前只看「{categoryLabels[selectedCategory]}」</Text>
-              <Text style={styles.categoryContextSubtitle}>下面已经切到这个分类里，适合你顺手把这一类集中收掉。</Text>
+              <Text style={styles.categoryContextSubtitle}>
+                {isFilteredLateCompletionState
+                  ? '这一类今天已经基本收住了，下面可以直接回看结果。'
+                  : '下面已经切到这个分类里，适合你顺手把这一类集中收掉。'}
+              </Text>
             </View>
             <TouchableOpacity style={styles.categoryContextAction} onPress={() => onSelectCategory('All')} activeOpacity={0.88}>
               <Text style={styles.categoryContextActionText}>回到全部</Text>
