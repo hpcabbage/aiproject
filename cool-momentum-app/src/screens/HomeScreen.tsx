@@ -65,6 +65,12 @@ export const HomeScreen = ({
   const reminderCount = [...pendingTodoItems, ...activeHabitItems].filter((item) => item.reminder?.enabled).length;
   const completionTone =
     completionRate >= 80 ? '今天推进得很稳，继续保持。' : completionRate >= 40 ? '节奏已经拉起来了，再收掉几项会很舒服。' : '先清掉眼前最重要的一项，今天就会顺很多。';
+  const instantFeedbackText =
+    totalDone >= 5
+      ? `今天已经拿下 ${totalDone} 项，状态很漂亮。`
+      : totalDone > 0
+        ? `很好，今天已经收掉 ${totalDone} 项动作。`
+        : null;
 
   const emptyTodoText =
     selectedCategory === 'All'
@@ -103,6 +109,13 @@ export const HomeScreen = ({
             <Text style={styles.heroMetricLabel}>提醒中</Text>
           </View>
         </View>
+
+        {instantFeedbackText ? (
+          <View style={styles.instantFeedbackPill}>
+            <Ionicons name="sparkles" size={14} color={colors.white} />
+            <Text style={styles.instantFeedbackText}>{instantFeedbackText}</Text>
+          </View>
+        ) : null}
       </LinearGradient>
 
       <GlassCard>
@@ -389,6 +402,24 @@ const styles = StyleSheet.create({
   heroMetricValue: { color: colors.white, fontSize: 22, fontWeight: '800' },
   heroMetricLabel: { color: 'rgba(255,255,255,0.68)', fontSize: 11, fontWeight: '700' },
   heroDivider: { width: 1, alignSelf: 'stretch', backgroundColor: 'rgba(255,255,255,0.12)' },
+  instantFeedbackPill: {
+    marginTop: 2,
+    alignSelf: 'flex-start',
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    borderRadius: 999,
+    backgroundColor: 'rgba(255,255,255,0.14)',
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.18)',
+  },
+  instantFeedbackText: {
+    color: colors.white,
+    fontSize: 12,
+    fontWeight: '700',
+  },
   pulseCardInner: { paddingHorizontal: 16, paddingVertical: 16, gap: 14 },
   pulseCardHeader: { flexDirection: 'row', gap: 12, alignItems: 'flex-start' },
   pulseBadge: {
