@@ -34,5 +34,6 @@ export const getTopCategory = (todos: TodoItem[], habits: Habit[]) => {
     return '还没形成明显节奏';
   }
 
-  return `${categoryLabels[top[0] as keyof typeof categoryLabels]}强度最高`;
+  const topCategoryLabel = categoryLabels[top[0] as keyof typeof categoryLabels] ?? top[0];
+  return `${topCategoryLabel}强度最高`;
 };
