@@ -75,15 +75,23 @@ export const HomeScreen = ({
 
   const emptyTodoText =
     selectedCategory === 'All'
-      ? '这里还没有待办。'
+      ? habits.length > 0
+        ? '习惯已经排上了，再补一条今天要推进的事。'
+        : '这里还没有待办。'
       : '这一类里还没有待办。';
   const emptyHabitText =
     selectedCategory === 'All'
-      ? '这里还没有习惯。'
+      ? todos.length > 0
+        ? '待办已经排上了，再补一条能长期坚持的习惯。'
+        : '这里还没有习惯。'
       : '这一类里还没有习惯。';
   const showQuickAddCard = !(selectedCategory === 'All' && todos.length === 0 && habits.length === 0);
   const showCategoryContextCard = selectedCategory !== 'All';
   const isTrueEmptyState = todos.length === 0 && habits.length === 0;
+  const topFocusEmptySubtitle =
+    todos.length === 0 && habits.length > 0
+      ? '习惯区已经可以继续打卡，再补一条今日待办，首页节奏会更完整。'
+      : '先把第一条待办放进来，首页就会从空白切到可推进的节奏面板。';
 
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
@@ -100,7 +108,7 @@ export const HomeScreen = ({
         <View style={[styles.heroFooter, isTrueEmptyState && styles.heroFooterMuted]}>
           <View style={styles.heroMetric}>
             <Text style={[styles.heroMetricValue, isTrueEmptyState && styles.heroMetricValueMuted]}>{pendingTodos}</Text>
-            <Text style={styles.heroMetricLabel}>待完成</Text>
+            <Text style={styles.heroMetricLabel}>未完成</Text>
           </View>
           <View style={styles.heroDivider} />
           <View style={styles.heroMetric}>
@@ -215,7 +223,7 @@ export const HomeScreen = ({
               </View>
               <View style={styles.emptyTopFocusTextBlock}>
                 <Text style={styles.emptyTopFocusTitle}>先选出今天最重要的 1 件事</Text>
-                <Text style={styles.emptyTopFocusSubtitle}>先把第一条待办放进来，首页就会从空白切到可推进的节奏面板。</Text>
+                <Text style={styles.emptyTopFocusSubtitle}>{topFocusEmptySubtitle}</Text>
               </View>
             </View>
             <TouchableOpacity style={styles.emptyTopFocusCta} onPress={onAddPress} activeOpacity={0.88}>
