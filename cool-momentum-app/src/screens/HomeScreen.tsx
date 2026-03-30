@@ -65,12 +65,7 @@ export const HomeScreen = ({
   const reminderCount = [...pendingTodoItems, ...activeHabitItems].filter((item) => item.reminder?.enabled).length;
   const completionTone =
     completionRate >= 80 ? '今天推进得很稳，继续保持。' : completionRate >= 40 ? '节奏已经拉起来了，再收掉几项会很舒服。' : '先清掉眼前最重要的一项，今天就会顺很多。';
-  const instantFeedbackText =
-    totalDone >= 5
-      ? `今天已经拿下 ${totalDone} 项，状态很漂亮。`
-      : totalDone > 0
-        ? `很好，今天已经收掉 ${totalDone} 项动作。`
-        : null;
+  const instantFeedbackText = totalDone >= 5 ? `今天已经拿下 ${totalDone} 项，状态很漂亮。` : null;
 
   const emptyTodoText =
     selectedCategory === 'All'
