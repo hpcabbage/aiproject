@@ -208,7 +208,7 @@ export const HomeScreen = ({
               </View>
               <View style={styles.emptyTopFocusTextBlock}>
                 <Text style={styles.emptyTopFocusTitle}>先选出今天最重要的 1 件事</Text>
-                <Text style={styles.emptyTopFocusSubtitle}>竞品里最稳的做法不是堆功能，而是帮你先聚焦。先加一条待办，首页节奏会立刻立住。</Text>
+                <Text style={styles.emptyTopFocusSubtitle}>先把第一条待办放进来，首页就会从空白切到可推进的节奏面板。</Text>
               </View>
             </View>
             <TouchableOpacity style={styles.emptyTopFocusCta} onPress={onAddPress} activeOpacity={0.88}>
