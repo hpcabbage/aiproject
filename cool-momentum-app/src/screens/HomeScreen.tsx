@@ -173,26 +173,33 @@ export const HomeScreen = ({
             </View>
             <View style={styles.topFocusList}>
               {topTodos.map((item, index) => (
-                <TouchableOpacity key={item.id} style={styles.topFocusRow} onPress={() => onEditTodo(item.id)} activeOpacity={0.86}>
-                  <View style={styles.topFocusIndex}>
-                    <Text style={styles.topFocusIndexText}>{index + 1}</Text>
-                  </View>
-                  <View style={styles.topFocusContent}>
-                    <Text style={styles.topFocusText} numberOfLines={1}>
-                      {item.title}
-                    </Text>
-                    <View style={styles.topFocusMetaRow}>
-                      <Text style={styles.topFocusMeta}>{categoryLabels[item.category]}</Text>
-                      {item.reminder?.enabled ? (
-                        <View style={styles.inlineReminderBadge}>
-                          <Ionicons name="notifications-outline" size={12} color={colors.warning} />
-                          <Text style={styles.inlineReminderText}>{item.reminder.time}</Text>
-                        </View>
-                      ) : null}
+                <View key={item.id} style={styles.topFocusRow}>
+                  <TouchableOpacity style={styles.topFocusMain} onPress={() => onEditTodo(item.id)} activeOpacity={0.86}>
+                    <View style={styles.topFocusIndex}>
+                      <Text style={styles.topFocusIndexText}>{index + 1}</Text>
                     </View>
-                  </View>
-                  <Ionicons name="chevron-forward" size={18} color={colors.textMuted} />
-                </TouchableOpacity>
+                    <View style={styles.topFocusContent}>
+                      <Text style={styles.topFocusText} numberOfLines={1}>
+                        {item.title}
+                      </Text>
+                      <View style={styles.topFocusMetaRow}>
+                        <Text style={styles.topFocusMeta}>{categoryLabels[item.category]}</Text>
+                        {item.reminder?.enabled ? (
+                          <View style={styles.inlineReminderBadge}>
+                            <Ionicons name="notifications-outline" size={12} color={colors.warning} />
+                            <Text style={styles.inlineReminderText}>{item.reminder.time}</Text>
+                          </View>
+                        ) : null}
+                      </View>
+                    </View>
+                    <Ionicons name="create-outline" size={18} color={colors.textMuted} />
+                  </TouchableOpacity>
+
+                  <TouchableOpacity style={styles.topFocusDoneButton} onPress={() => onToggleTodo(item.id)} activeOpacity={0.88}>
+                    <Ionicons name="checkmark-circle" size={18} color={colors.white} />
+                    <Text style={styles.topFocusDoneButtonText}>完成</Text>
+                  </TouchableOpacity>
+                </View>
               ))}
             </View>
           </View>
@@ -497,12 +504,35 @@ const styles = StyleSheet.create({
   topFocusList: { gap: 10 },
   topFocusRow: {
     flexDirection: 'row',
+    alignItems: 'stretch',
+    gap: 10,
+  },
+  topFocusMain: {
+    flex: 1,
+    flexDirection: 'row',
     alignItems: 'center',
     gap: 10,
     paddingHorizontal: 12,
     paddingVertical: 12,
     borderRadius: 16,
     backgroundColor: 'rgba(255,255,255,0.04)',
+  },
+  topFocusDoneButton: {
+    minWidth: 72,
+    paddingHorizontal: 12,
+    paddingVertical: 12,
+    borderRadius: 16,
+    backgroundColor: 'rgba(49, 208, 170, 0.18)',
+    borderWidth: 1,
+    borderColor: 'rgba(49, 208, 170, 0.28)',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 6,
+  },
+  topFocusDoneButtonText: {
+    color: colors.white,
+    fontSize: 12,
+    fontWeight: '800',
   },
   topFocusIndex: {
     width: 24,
