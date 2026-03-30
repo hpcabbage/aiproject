@@ -69,11 +69,11 @@ export const HomeScreen = ({
 
   const emptyTodoText =
     selectedCategory === 'All'
-      ? '今天还没有待办。先放一条真正要推进的事。'
+      ? '这里还没有待办。'
       : '这一类里还没有待办。';
   const emptyHabitText =
     selectedCategory === 'All'
-      ? '今天还没有习惯。先放一条值得长期坚持的动作。'
+      ? '这里还没有习惯。'
       : '这一类里还没有习惯。';
   const showQuickAddCard = !(selectedCategory === 'All' && todos.length === 0 && habits.length === 0);
   const showCategoryContextCard = selectedCategory !== 'All';
