@@ -224,32 +224,33 @@ export const HomeScreen = ({
         </GlassCard>
       )}
 
-      <View style={styles.filtersRow}>
-        {categories.map((category) => {
-          const active = category === selectedCategory;
-          const label = category === 'All' ? '全部' : categoryLabels[category];
-          return (
-            <TouchableOpacity key={category} style={[styles.filterPill, active && styles.filterPillActive]} onPress={() => onSelectCategory(category)}>
-              <Text style={[styles.filterText, active && styles.filterTextActive]}>{label}</Text>
-            </TouchableOpacity>
-          );
-        })}
-      </View>
-
-      {showCategoryContextCard ? (
-        <View style={styles.categoryContextCard}>
-          <View style={styles.categoryContextTextBlock}>
-            <Text style={styles.categoryContextTitle}>当前只看「{categoryLabels[selectedCategory]}」</Text>
-            <Text style={styles.categoryContextSubtitle}>上面的节奏仍是今天的全局视角，下面列表已经切到这个分类里，适合你定点收一类内容。</Text>
-          </View>
-          <TouchableOpacity style={styles.categoryContextAction} onPress={() => onSelectCategory('All')} activeOpacity={0.88}>
-            <Text style={styles.categoryContextActionText}>回到全部</Text>
-          </TouchableOpacity>
-        </View>
-      ) : null}
-
       <View style={styles.section}>
         <SectionTitle title="今日待办" subtitle="今天真正要推进的事。" />
+
+        <View style={styles.filtersRow}>
+          {categories.map((category) => {
+            const active = category === selectedCategory;
+            const label = category === 'All' ? '全部' : categoryLabels[category];
+            return (
+              <TouchableOpacity key={category} style={[styles.filterPill, active && styles.filterPillActive]} onPress={() => onSelectCategory(category)}>
+                <Text style={[styles.filterText, active && styles.filterTextActive]}>{label}</Text>
+              </TouchableOpacity>
+            );
+          })}
+        </View>
+
+        {showCategoryContextCard ? (
+          <View style={styles.categoryContextCard}>
+            <View style={styles.categoryContextTextBlock}>
+              <Text style={styles.categoryContextTitle}>当前只看「{categoryLabels[selectedCategory]}」</Text>
+              <Text style={styles.categoryContextSubtitle}>上面的节奏仍是今天的全局视角，下面列表已经切到这个分类里，适合你定点收一类内容。</Text>
+            </View>
+            <TouchableOpacity style={styles.categoryContextAction} onPress={() => onSelectCategory('All')} activeOpacity={0.88}>
+              <Text style={styles.categoryContextActionText}>回到全部</Text>
+            </TouchableOpacity>
+          </View>
+        ) : null}
+
         <View style={styles.list}>
           {todos.length ? (
             <>
