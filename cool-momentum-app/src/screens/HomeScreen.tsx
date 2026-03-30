@@ -285,7 +285,7 @@ export const HomeScreen = ({
                       </View>
                     </View>
                     <View style={styles.collapsibleHeaderRight}>
-                      <Text style={styles.collapsibleHint}>{todoDoneCollapsed ? '展开查看' : '收起'}</Text>
+                      <Text style={styles.collapsibleHint}>{todoDoneCollapsed ? `查看已完成（${completedTodoItems.length}）` : '收起'}</Text>
                       <Ionicons name={todoDoneCollapsed ? 'chevron-down' : 'chevron-up'} size={16} color={colors.textMuted} />
                     </View>
                   </TouchableOpacity>
@@ -356,7 +356,7 @@ export const HomeScreen = ({
                       </View>
                     </View>
                     <View style={styles.collapsibleHeaderRight}>
-                      <Text style={styles.collapsibleHint}>{habitDoneCollapsed ? '展开查看' : '收起'}</Text>
+                      <Text style={styles.collapsibleHint}>{habitDoneCollapsed ? `查看已打卡（${completedHabitItems.length}）` : '收起'}</Text>
                       <Ionicons name={habitDoneCollapsed ? 'chevron-down' : 'chevron-up'} size={16} color={colors.textMuted} />
                     </View>
                   </TouchableOpacity>
