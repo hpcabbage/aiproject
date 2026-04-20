@@ -56,9 +56,26 @@
   1. `AppServiceImpl.java` 缺少 `AppSetVersionStableRequest` import
   2. `AppFrontendVersioningServiceImpl.java` 中 `appMapper.update(createdVersion.getAppId(), app)` 写法错误，已修正为 `appMapper.update(app)`
 - 修复后再次执行 `./mvnw -q -DskipTests compile`，已通过
+- 已完成真实接口联调验证：
+  - 使用账号 `cabbage` 登录成功
+  - 查询本人应用列表成功，定位 `appId=11`
+  - 先触发一次真实代码生成，成功落出 `tmp/code_output/vue_project_11`
+  - 调用 `/app/commit/version` 成功，生成 `V1`
+  - 调用 `/app/version/stable` 成功，将 `V1` 标记为稳定版本
+  - 调用 `/app/version/rollback` 成功，生成回滚版本 `V2`
+  - 再次查询版本列表，关键字段验证通过：
+    - `V2.sourceType = ROLLBACK`
+    - `V2.sourceVersionId = 1`
+    - `V2.currentVersion = true`
+    - `V1.isStable = 1`
+    - `V1.currentVersion = false`
+- 已完成一轮 Phase 2B 最小体验增强：
+  - 版本列表增加“只看稳定版本”筛选
+  - 当前使用中的版本增加更明显的绿色高亮
+  - 体验增强后前端 `npm run build` 再次通过
 
 ### 尚未完成验证
-- 尚未完成真实后端接口联调验证
+- 尚未补前端页面人工点击验证截图留档
 
 ## 当前已知风险
 
@@ -82,12 +99,12 @@
 
 如果继续推进 V2，当前更合适的下一步不是再补更多字段，而是二选一：
 
-### 方向 A：验证收口
-- Maven compile 已完成并通过
-- 下一步做一次真实接口联调
-- 确认 stable toggle / rollback / currentVersion 更新实际可用
+### 方向 A：正式收口
+- 当前 compile 与真实接口联调都已完成
+- 可以 push 并作为 Phase 2A 已完成状态收口
+- 补一份人工点击截图或录屏留档即可
 
-### 方向 B：体验增强
+### 方向 B：继续体验增强
 - 把版本列表做成更明确的时间线/卡片式布局
-- 增加“只看稳定版本”筛选
-- 优化当前版本高亮与操作区布局
+- 增加更清晰的当前版本操作区
+- 补稳定版本筛选的数量提示、空态与引导文案

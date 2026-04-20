@@ -52,19 +52,18 @@
 - 状态：进行中
 
 ## 本轮已完成
-1. 已完成 T5 收口，把 `nocode-version-management-v2` 的 Phase 2A 结果同步回 change 文档与执行态。
-2. 已新增 `CHANGES/nocode-version-management-v2/notes.md`，集中记录：
-   - Phase 2A 实际落地内容
-   - 已完成验证
-   - 尚未完成验证
-   - 已知风险
-   - 提交建议
-   - 下一步建议
-3. 已将 `tasks.md` 中 T1-T5 全部标记为完成，说明当前这一轮 change 的最小目标已实现。
-4. 已把当前阶段收口结论明确为：
-   - V2 Phase 2A 最小闭环已完成
-   - 当前只缺 Java 环境下的后端编译/联调验证
-   - 如果不先做环境验证，下一步更适合进入体验增强而不是继续补字段
+1. 已完成真实接口联调，不再停留在静态接线与 compile 通过层面。
+2. 已使用账号 `cabbage` 登录后端，验证登录态与权限链路正常。
+3. 已查询本人应用列表并定位 `appId=11`，随后直接调用生成接口，成功落出 `tmp/code_output/vue_project_11`。
+4. 已完成版本管理主链路真实联调：
+   - `/app/commit/version` 成功生成 `V1`
+   - `/app/version/stable` 成功将 `V1` 标记为稳定版本
+   - `/app/version/rollback` 成功生成回滚版本 `V2`
+   - 再查列表后确认 `sourceType / sourceVersionId / isStable / currentVersion` 语义全部符合预期
+5. 已继续做一轮 Phase 2B 最小体验增强：
+   - 版本列表新增“只看稳定版本”筛选
+   - 当前使用中的版本新增更明显的绿色高亮
+6. 已将联调结果与体验增强结果回写到 `CHANGES/nocode-version-management-v2/notes.md`。
 
 ## 当前决策
 ### 决策 1：当前 change 只围绕前端修改版本，不做泛化应用状态历史
@@ -84,26 +83,30 @@
 
 ## 当前验证
 - change 文档验证：
-  - `proposal.md / tasks.md / design.md / spec-delta.md / notes.md` 已齐全
+  - `proposal.md / tasks.md / design.md / spec-delta.md / notes.md / release-summary.md` 已齐全
   - 当前 change 已形成完整的 proposal -> implementation -> validation -> notes 收口链路
-- 功能验证：
-  - 版本当前态、稳定态、来源关系、稳定版本 toggle 已完成代码接线
+- 后端编译验证：
+  - 已显式注入 `JAVA_HOME / MAVEN_HOME / PATH`
+  - `./mvnw -q -DskipTests compile` 已通过
 - 前端构建验证：
   - `NocodeFront/yu-ai-code-mother-frontend` 已执行 `npm run build` 通过
+  - 在体验增强后再次 build，仍通过
   - 仍存在 chunk >500k 警告，但不是当前主线阻塞项
-- 后端编译验证：
-  - 已根据老板补充的历史环境信息显式注入：
-    - `JAVA_HOME=/home/cabbage/.local/java`
-    - `MAVEN_HOME=/home/cabbage/.local/maven`
-    - `PATH=$JAVA_HOME/bin:$MAVEN_HOME/bin:$PATH`
-  - 已实际执行 `./mvnw -q -DskipTests compile`
-  - 编译过程中抓到并修复 2 个真实问题：
-    1. `AppServiceImpl.java` 缺少 `AppSetVersionStableRequest` import
-    2. `AppFrontendVersioningServiceImpl.java` 中 `appMapper.update(createdVersion.getAppId(), app)` 写法错误，已修复为 `appMapper.update(app)`
-  - 修复后再次执行 `./mvnw -q -DskipTests compile`，已通过
+- 真实接口联调验证：
+  - 登录成功
+  - 应用列表查询成功
+  - 真实代码生成成功
+  - 提交版本成功
+  - 标记稳定版本成功
+  - 回滚版本成功
+  - 列表返回字段验证通过：
+    - `sourceType`
+    - `sourceVersionId`
+    - `isStable`
+    - `currentVersion`
 
 ## 当前风险
-1. 当前最大未完成项已不再是 compile，而是后端真实接口联调验证仍未完成。
+1. 当前最大未完成项已不再是主链路联调，而是是否还要继续推进 Phase 2B 的体验增强范围。
 2. `currentVersion` 当前在 VO 转换时逐条查 `app`，未来版本量上来后可能需要优化。
 3. 当前“稳定版本”允许多条记录同时存在，这是现阶段设计选择；若未来要限制唯一稳定版本，需要新 change。
 4. 前端构建仍有 chunk >500k 警告，但不是当前主线阻塞项。
@@ -116,4 +119,4 @@
 - CHANGES/nocode-version-management-v2/release-summary.md
 
 ## Next Action
-继续只推进一个最小子步：若老板准备提交本轮改动，则优先按 `release-summary.md` 的单提交建议收口；若继续推进产品，则下一步优先做真实接口联调或体验增强。
+继续只推进一个最小子步：筛选本轮是否需要把相关图片一并纳入提交，随后分别在 workspace / NoCode / NocodeFront 执行 push；若图片不属于本轮核心产物，则直接跳过图片只 push 代码与文档。
