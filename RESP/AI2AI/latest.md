@@ -1,18 +1,16 @@
 # AI2AI Latest
 
 ## 当前结论
-当前 `add-app-version-history` 已进一步收敛为：**真实文件版本目录 + 数据库迭代信息索引模型**。老板明确希望每条版本记录都对应真实文件版本，但并不要求真实 Git commit，也不需要完整 Git 仓库管理。同时，版本提交必须由用户显式触发，不能在前端修改成功后自动入版本。
+`add-app-version-history` 第一阶段已完成，因此当前已经切到下一条新开的 change：`nocode-version-restore-experience`。
 
-本轮老板进一步明确了一个更关键的产品边界：这是 **NoCode 项目**，终端用户不应该接触代码 diff，也不应该看到系统自作聪明地描述“这次改了什么”。因为系统并不知道页面业务上具体改了什么，强行展示 diff 或自动摘要都容易制造错误感知。
+这条新 change 的定位不是重新做底层版本模型，也不是引入代码 diff，而是把已经存在的版本能力继续往“用户真正敢用恢复能力”推进一层。
 
-因此当前版本能力正式收敛为：
-1. 只做“版本快照 + 版本备注 + 回滚”；
-2. 版本提交继续由用户主动触发；
-3. 系统内部仍保存真实前端文件版本目录与数据库索引；
-4. 前台只展示版本号、标题/备注、时间、来源、状态、版本目录等基础信息；
-5. 不再把代码级 diff 作为面向用户的核心能力；
-6. 不做自动“本次改了什么”的变更摘要推断；
-7. 当前版本页的核心目标应回到“可靠存档、可靠查看、可靠回滚”，而不是 diff 展示。
+当前目标是围绕版本恢复前后的体验，补齐最小产品化能力：
+1. 恢复前更容易判断目标版本是否正确；
+2. 恢复动作的风险提示与确认语义更清楚；
+3. 恢复完成后，用户更容易理解当前版本状态与来源关系。
+
+这条线之所以最值得先开，是因为它最贴近当前版本主线的自然延长，又不会撞上老板已经明确收窄过的“不要做代码 diff 视角”边界。
 
 ## 当前项目
 - 项目：`NoCode`
@@ -20,8 +18,8 @@
 - 当前主题：前端修改版本记录第一阶段文件版本目录 + 数据库索引落地
 
 ## 当前 Change
-- change-id: `nocode-version-management-v2`
-- 当前 task: `Phase 2A 收口完成，等待 Java 环境验证或进入下一阶段体验增强`
+- change-id: `nocode-version-restore-experience`
+- 当前 task: `nocode-version-restore-experience 第一阶段前端提交已完成，等待下一阶段方向确认`
 
 ## 当前里程碑
 ### M0：建立持续自治工作流
@@ -52,18 +50,15 @@
 - 状态：进行中
 
 ## 本轮已完成
-1. 已完成真实接口联调，不再停留在静态接线与 compile 通过层面。
-2. 已使用账号 `cabbage` 登录后端，验证登录态与权限链路正常。
-3. 已查询本人应用列表并定位 `appId=11`，随后直接调用生成接口，成功落出 `tmp/code_output/vue_project_11`。
-4. 已完成版本管理主链路真实联调：
-   - `/app/commit/version` 成功生成 `V1`
-   - `/app/version/stable` 成功将 `V1` 标记为稳定版本
-   - `/app/version/rollback` 成功生成回滚版本 `V2`
-   - 再查列表后确认 `sourceType / sourceVersionId / isStable / currentVersion` 语义全部符合预期
-5. 已继续做一轮 Phase 2B 最小体验增强：
-   - 版本列表新增“只看稳定版本”筛选
-   - 当前使用中的版本新增更明显的绿色高亮
-6. 已将联调结果与体验增强结果回写到 `CHANGES/nocode-version-management-v2/notes.md`。
+1. 已完成 `nocode-version-restore-experience` 第一阶段最小实现收口，并补齐 `release-summary.md`。
+2. 已整理本轮最小验证结论：
+   - 前端构建通过：`npm run build`
+   - 当前代码改动仍限定在 `AppVersionPage.vue` 单页局部区块
+3. 已明确本轮用户可感知变化：
+   - 恢复前更容易判断目标版本
+   - 恢复中更容易理解动作结果
+   - 恢复后更容易确认当前版本状态
+4. 已完成前端提交：`be440d6 feat：增强版本恢复前判断与结果确认体验`
 
 ## 当前决策
 ### 决策 1：当前 change 只围绕前端修改版本，不做泛化应用状态历史
@@ -82,41 +77,26 @@
 - 回滚：除非后续明确增加“开发者视图”，否则不恢复代码 diff 作为主展示路径。
 
 ## 当前验证
-- change 文档验证：
-  - `proposal.md / tasks.md / design.md / spec-delta.md / notes.md / release-summary.md` 已齐全
-  - 当前 change 已形成完整的 proposal -> implementation -> validation -> notes 收口链路
-- 后端编译验证：
-  - 已显式注入 `JAVA_HOME / MAVEN_HOME / PATH`
-  - `./mvnw -q -DskipTests compile` 已通过
-- 前端构建验证：
-  - `NocodeFront/yu-ai-code-mother-frontend` 已执行 `npm run build` 通过
-  - 在体验增强后再次 build，仍通过
-  - 仍存在 chunk >500k 警告，但不是当前主线阻塞项
-- 真实接口联调验证：
-  - 登录成功
-  - 应用列表查询成功
-  - 真实代码生成成功
-  - 提交版本成功
-  - 标记稳定版本成功
-  - 回滚版本成功
-  - 列表返回字段验证通过：
-    - `sourceType`
-    - `sourceVersionId`
-    - `isStable`
-    - `currentVersion`
+- 新 change 文档验证：
+  - `tasks.md` 中 T1、T2、T3、T4、T5 已完成
+  - `notes.md` 已记录 T1 主路径问题、T2 边界结论与 T3 最小页面方案
+  - `release-summary.md` 已补齐本轮变更概述、验证、风险与阶段结论建议
+- 实现验证：
+  - 前端构建通过：`npm run build`
+  - 前端提交已完成：`be440d6 feat：增强版本恢复前判断与结果确认体验`
+- 收敛验证：
+  - 实际代码改动仍限制在 `AppVersionPage.vue` 单页局部区块
 
 ## 当前风险
-1. 当前最大未完成项已不再是主链路联调，而是是否还要继续推进 Phase 2B 的体验增强范围。
-2. `currentVersion` 当前在 VO 转换时逐条查 `app`，未来版本量上来后可能需要优化。
-3. 当前“稳定版本”允许多条记录同时存在，这是现阶段设计选择；若未来要限制唯一稳定版本，需要新 change。
-4. 前端构建仍有 chunk >500k 警告，但不是当前主线阻塞项。
-5. Java / Maven 依赖显式环境变量注入，后续最好把这套路径写进 `TOOLS.md`，避免再次误判。
+1. 这条新 change 很容易被做大成完整版本对比产品，因此必须始终守住“只做恢复体验，不做 diff 视图”的边界。
+2. 当前已通过构建，但还缺一轮页面主路径人工点击确认，尤其是：普通版本、稳定版本、回滚生成版本三类展示语义是否都顺。
+3. 当前构建仍有既有大包体 warning，但不是本轮变更引入的新阻塞。
 
 ## 变更文件
+- CHANGES/nocode-version-restore-experience/release-summary.md
+- CHANGES/nocode-version-restore-experience/tasks.md
+- NocodeFront/yu-ai-code-mother-frontend/src/pages/app/AppVersionPage.vue
 - RESP/AI2AI/latest.md
-- CHANGES/nocode-version-management-v2/tasks.md
-- CHANGES/nocode-version-management-v2/notes.md
-- CHANGES/nocode-version-management-v2/release-summary.md
 
 ## Next Action
-继续只推进一个最小子步：筛选本轮是否需要把相关图片一并纳入提交，随后分别在 workspace / NoCode / NocodeFront 执行 push；若图片不属于本轮核心产物，则直接跳过图片只 push 代码与文档。
+继续只推进一个最小子步：回到变更总览，判断 `nocode-version-restore-experience` 是否还需要补后端/文档提交，若无则切换到下一条最值得推进的 change。
